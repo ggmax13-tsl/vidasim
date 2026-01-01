@@ -1,0 +1,369 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh;
+    color: #fff;
+}
+
+#app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.tela {
+    display: none;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.tela.ativa {
+    display: block;
+}
+
+/* Tela Inicial */
+#tela-inicial {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#tela-inicial h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    background: linear-gradient(45deg, #00d9ff, #00ff88);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.subtitulo {
+    font-size: 1.2rem;
+    color: #888;
+    margin-bottom: 40px;
+}
+
+button {
+    background: linear-gradient(45deg, #00d9ff, #00ff88);
+    border: none;
+    padding: 15px 30px;
+    font-size: 1rem;
+    color: #1a1a2e;
+    font-weight: bold;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 5px;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(0, 217, 255, 0.4);
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* Tela do Jogo */
+header {
+    text-align: center;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.info-personagem h2 {
+    font-size: 1.5rem;
+    color: #00d9ff;
+}
+
+.info-personagem p {
+    color: #888;
+}
+
+/* Barras de Status */
+.barras-status {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.barra {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.barra > span:first-child {
+    width: 120px;
+}
+
+.barra > span:last-child {
+    width: 60px;
+    text-align: right;
+}
+
+.barra-container {
+    flex: 1;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 0 10px;
+}
+
+.barra-preenchimento {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease, background 0.5s ease;
+    width: 100%;
+}
+
+#barra-felicidade {
+    background: linear-gradient(90deg, #ffd700, #ffed4a);
+}
+
+#barra-saude {
+    background: linear-gradient(90deg, #ff4757, #ff6b81);
+}
+
+#barra-inteligencia {
+    background: linear-gradient(90deg, #5352ed, #70a1ff);
+}
+
+#barra-dinheiro {
+    background: linear-gradient(90deg, #2ed573, #7bed9f);
+}
+
+/* Log de Eventos */
+.log-eventos {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 20px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.log-eventos p {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+}
+
+.log-eventos p:last-child {
+    border-bottom: none;
+}
+
+.evento-positivo {
+    color: #2ed573;
+}
+
+.evento-negativo {
+    color: #ff4757;
+}
+
+.evento-neutro {
+    color: #ffd700;
+}
+
+/* Ações */
+.acoes {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.acoes button {
+    padding: 12px 10px;
+    font-size: 0.85rem;
+}
+
+.acoes button:first-child {
+    grid-column: span 2;
+    background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+}
+
+/* Menu Popup */
+.menu-popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #1a1a2e;
+    border: 2px solid #00d9ff;
+    border-radius: 20px;
+    padding: 25px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 100;
+    box-shadow: 0 10px 40px rgba(0, 217, 255, 0.3);
+}
+
+.menu-popup.ativo {
+    display: block;
+}
+
+.menu-popup h3 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #00d9ff;
+}
+
+.menu-popup button {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.btn-fechar {
+    background: linear-gradient(45deg, #ff4757, #ff6b81) !important;
+    margin-top: 10px;
+}
+
+/* Overlay */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 50;
+}
+
+.overlay.ativo {
+    display: block;
+}
+
+/* Relacionamentos */
+.relacionamento-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.relacionamento-item h4 {
+    color: #00d9ff;
+    margin-bottom: 5px;
+}
+
+.relacionamento-item p {
+    font-size: 0.85rem;
+    color: #888;
+}
+
+.relacionamento-item button {
+    padding: 8px 15px;
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+/* Trabalho e Educação */
+.emprego-item, .curso-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+}
+
+.emprego-item h4, .curso-item h4 {
+    color: #00d9ff;
+}
+
+.emprego-item p, .curso-item p {
+    font-size: 0.85rem;
+    color: #888;
+    margin: 5px 0;
+}
+
+/* Game Over */
+#tela-gameover {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#tela-gameover h1 {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+    color: #ff4757;
+}
+
+#resumo-vida {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 30px;
+    width: 100%;
+}
+
+#resumo-vida h3 {
+    color: #00d9ff;
+    margin-bottom: 15px;
+}
+
+#resumo-vida p {
+    margin: 8px 0;
+    color: #ccc;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #00d9ff;
+    border-radius: 10px;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.log-eventos p {
+    animation: fadeIn 0.3s ease;
+}
+
+/* Responsivo */
+@media (max-width: 400px) {
+    .barra > span:first-child {
+        width: 90px;
+        font-size: 0.8rem;
+    }
+    
+    .acoes button {
+        font-size: 0.75rem;
+        padding: 10px 5px;
+    }
+}
