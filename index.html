@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VidaSim - Simulador de Vida</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body data-theme="light">
+    <!-- Splash/Loading Screen -->
+    <div id="splash-screen" class="splash-screen active">
+        <div class="splash-content">
+            <div class="splash-logo">
+                <i class="fas fa-heartbeat"></i>
+            </div>
+            <h1 class="splash-title">VidaSim</h1>
+            <div class="splash-loader">
+                <div class="loader-bar"></div>
+            </div>
+            <p class="splash-text">Carregando sua vida...</p>
+        </div>
+    </div>
+
+    <!-- Main Menu Screen -->
+    <div id="main-menu" class="screen">
+        <div class="menu-container">
+            <div class="menu-header">
+                <div class="menu-logo">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <h1>VidaSim</h1>
+                <p class="menu-subtitle">Simulador de Vida</p>
+            </div>
+            
+            <div class="menu-buttons">
+                <button class="menu-btn primary" onclick="showCharacterCreation()">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Nova Vida</span>
+                </button>
+                <button class="menu-btn" onclick="startRandomLife()" id="btn-random">
+                    <i class="fas fa-random"></i>
+                    <span>Vida Aleatória</span>
+                </button>
+                <button class="menu-btn" onclick="loadGame()" id="btn-load">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Carregar Jogo</span>
+                </button>
+                <button class="menu-btn" onclick="showSettings()">
+                    <i class="fas fa-cog"></i>
+                    <span>Configurações</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Character Creation Screen -->
+    <div id="character-creation" class="screen">
+        <div class="creation-container">
+            <div class="creation-header">
+                <button class="back-btn" onclick="showMainMenu()">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h2>Criar Personagem</h2>
+            </div>
+            
+            <div class="creation-form">
+                <div class="form-section">
+                    <h3><i class="fas fa-user"></i> Identidade</h3>
+                    <div class="form-group">
+                        <label>Nome</label>
+                        <input type="text" id="input-name" placeholder="Seu nome...">
+                    </div>
+                    <div class="form-group">
+                        <label>Gênero</label>
+                        <select id="input-gender">
+                            <option value="masculino">Masculino</option>
+                            <option value="feminino">Feminino</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-home"></i> Família</h3>
+                    <div class="form-group">
+                        <label>Classe Social</label>
+                        <select id="input-class">
+                            <option value="pobre">Classe Baixa</option>
+                            <option value="media" selected>Classe Média</option>
+                            <option value="alta">Classe Alta</option>
+                            <option value="rica">Rica</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3><i class="fas fa-globe"></i> Localização</h3>
+                    <div class="form-group">
+                        <label>País</label>
+                        <select id="input-country">
+                            <option value="Brasil" selected>Brasil</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cidade</label>
+                        <select id="input-city"></select>
+                    </div>
+                </div>
+                
+                <button class="btn-start" onclick="startCustomLife()">
+                    <i class="fas fa-play"></i>
+                    Começar Vida
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game-screen" class="screen">
+        <!-- Top Sticky Bar -->
+        <div class="top-bar">
+            <div class="player-info">
+                <div class="player-name" id="player-name">Jogador</div>
+                <div class="player-details" id="player-details">0 anos • Cidade</div>
+            </div>
+            <div class="top-actions">
+                <button class="icon-btn" onclick="showSettings()">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button class="icon-btn" onclick="saveGame()">
+                    <i class="fas fa-save"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-container">
+            <div class="stat-card" data-stat="health">
+                <div class="stat-icon"><i class="fas fa-heart"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">Saúde</span>
+                    <div class="stat-bar">
+                        <div class="stat-fill" id="stat-health"></div>
+                    </div>
+                </div>
+                <span class="stat-value" id="val-health">100</span>
+            </div>
+            
+            <div class="stat-card" data-stat="mood">
+                <div class="stat-icon"><i class="fas fa-smile"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">Humor</span>
+                    <div class="stat-bar">
+                        <div class="stat-fill" id="stat-mood"></div>
+                    </div>
+                </div>
+                <span class="stat-value" id="val-mood">100</span>
+            </div>
+            
+            <div class="stat-card" data-stat="money">
+                <div class="stat-icon"><i class="fas fa-wallet"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">Dinheiro</span>
+                    <div class="stat-bar">
+                        <div class="stat-fill" id="stat-money"></div>
+                    </div>
+                </div>
+                <span class="stat-value" id="val-money">R$ 0</span>
+            </div>
+            
+            <div class="stat-card" data-stat="reputation">
+                <div class="stat-icon"><i class="fas fa-star"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">Reputação</span>
+                    <div class="stat-bar">
+                        <div class="stat-fill" id="stat-reputation"></div>
+                    </div>
+                </div>
+                <span class="stat-value" id="val-reputation">50</span>
+            </div>
+            
+            <div class="stat-card" data-stat="skill">
+                <div class="stat-icon"><i class="fas fa-brain"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">Habilidade</span>
+                    <div class="stat-bar">
+                        <div class="stat-fill" id="stat-skill"></div>
+                    </div>
+                </div>
+                <span class="stat-value" id="val-skill">20</span>
+            </div>
+            
+            <div class="stat-card" data-stat="age">
+                <div class="stat-icon"><i class="fas fa-birthday-cake"></i></div>
+                <div class="stat-info">
+                    <span class="stat-label">Idade</span>
+                    <div class="stat-number" id="age-display">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline (aria-live for accessibility) -->
+        <div class="timeline-container">
+            <h3 class="timeline-title">
+                <i class="fas fa-history"></i> Linha do Tempo
+            </h3>
+            <div class="timeline" id="timeline" role="log" aria-live="polite" aria-atomic="false">
+                <!-- Events will be added here dynamically -->
+            </div>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="bottom-bar">
+            <button class="action-btn" onclick="ageUp()">
+                <i class="fas fa-forward"></i>
+                <span>Envelhecer</span>
+            </button>
+            <button class="action-btn" onclick="showActions('family')">
+                <i class="fas fa-home"></i>
+                <span>Família</span>
+            </button>
+            <button class="action-btn" onclick="showActions('relationships')">
+                <i class="fas fa-users"></i>
+                <span>Pessoas</span>
+            </button>
+            <button class="action-btn" onclick="showActions('activities')">
+                <i class="fas fa-running"></i>
+                <span>Atividades</span>
+            </button>
+            <button class="action-btn" onclick="showActions('work')">
+                <i class="fas fa-briefcase"></i>
+                <span>Trabalho</span>
+            </button>
+            <button class="action-btn" onclick="showActions('shop')">
+                <i class="fas fa-shopping-cart"></i>
+                <span>Lojas</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="gameover-screen" class="screen">
+        <div class="gameover-container">
+            <div class="gameover-header">
+                <i class="fas fa-cross"></i>
+                <h2>Descanse em Paz</h2>
+            </div>
+            <div class="gameover-info">
+                <h3 id="go-name">Nome do Jogador</h3>
+                <p id="go-dates">2026 - 2026</p>
+                <p id="go-cause">Causa: Desconhecida</p>
+            </div>
+            <div class="gameover-stats" id="go-stats">
+                <!-- Stats will be added here -->
+            </div>
+            <div class="gameover-actions">
+                <button class="menu-btn primary" onclick="showMainMenu()">
+                    <i class="fas fa-home"></i>
+                    <span>Menu Principal</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions Modal -->
+    <div id="actions-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="actions-title"><i class="fas fa-list"></i> Ações</h3>
+                <button class="modal-close" onclick="closeActionsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="actions-body">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Interaction Modal -->
+    <div id="interaction-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="interaction-title">Interagir</h3>
+                <button class="modal-close" onclick="closeInteractionModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="interaction-body">
+                <p id="interaction-text"></p>
+                <div id="interaction-options"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-cog"></i> Configurações</h3>
+                <button class="modal-close" onclick="closeSettings()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h4>Aparência</h4>
+                    <div class="setting-item">
+                        <label>Tema</label>
+                        <select id="setting-theme" onchange="changeTheme(this.value)">
+                            <option value="light">Claro</option>
+                            <option value="dark">Escuro</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>Gameplay</h4>
+                    <div class="setting-item">
+                        <label>Densidade de Eventos</label>
+                        <select id="setting-density">
+                            <option value="low">Baixa</option>
+                            <option value="medium" selected>Média</option>
+                            <option value="high">Alta</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Velocidade de Animação</label>
+                        <select id="setting-animation">
+                            <option value="slow">Lenta</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="fast">Rápida</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Idioma</label>
+                        <select id="setting-language">
+                            <option value="pt-BR" selected>Português (BR)</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>Modo Avançado (Em Breve)</h4>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="setting-advanced" disabled>
+                            Modo Avançado
+                        </label>
+                    </div>
+                    <div class="setting-item">
+                        <label>
+                            <input type="checkbox" id="setting-hardcore" disabled>
+                            Modo Hardcore
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>Dados</h4>
+                    <button class="btn-danger" onclick="confirmReset()">
+                        <i class="fas fa-trash"></i>
+                        Resetar Progresso
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Modal -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content result-content">
+            <div class="result-icon" id="result-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3 id="result-title">Resultado</h3>
+            <p id="result-text"></p>
+            <div id="result-stats" class="result-stats"></div>
+            <button class="btn-primary" onclick="closeResultModal()">OK</button>
+        </div>
+    </div>
+
+    <!-- Messaging Modal (Phone) -->
+    <div id="phone-modal" class="modal">
+        <div class="modal-content phone-content">
+            <div class="modal-header">
+                <h3 id="phone-contact">Conversa</h3>
+                <button class="modal-close" onclick="closePhoneModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="chat-messages" id="chat-messages"></div>
+                <div class="chat-input">
+                    <input type="text" id="chat-input-text" placeholder="Digite sua mensagem...">
+                    <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="dados.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
