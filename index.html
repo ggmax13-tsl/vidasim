@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidaSim - Simulador de Vida</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Tela Inicial -->
+        <div id="tela-inicial" class="tela ativa">
+            <h1>🎭 VidaSim</h1>
+            <p class="subtitulo">Simulador de Vida</p>
+            <button onclick="iniciarNovaVida()">Nova Vida</button>
+        </div>
+
+        <!-- Tela do Jogo -->
+        <div id="tela-jogo" class="tela">
+            <header>
+                <div class="info-personagem">
+                    <h2 id="nome-personagem">Nome</h2>
+                    <p id="idade-personagem">0 anos</p>
+                </div>
+            </header>
+
+            <div class="barras-status">
+                <div class="barra">
+                    <span>😊 Felicidade</span>
+                    <div class="barra-container">
+                        <div id="barra-felicidade" class="barra-preenchimento"></div>
+                    </div>
+                    <span id="valor-felicidade">100%</span>
+                </div>
+                <div class="barra">
+                    <span>❤️ Saúde</span>
+                    <div class="barra-container">
+                        <div id="barra-saude" class="barra-preenchimento"></div>
+                    </div>
+                    <span id="valor-saude">100%</span>
+                </div>
+                <div class="barra">
+                    <span>🧠 Inteligência</span>
+                    <div class="barra-container">
+                        <div id="barra-inteligencia" class="barra-preenchimento"></div>
+                    </div>
+                    <span id="valor-inteligencia">100%</span>
+                </div>
+                <div class="barra">
+                    <span>💰 Dinheiro</span>
+                    <div class="barra-container">
+                        <div id="barra-dinheiro" class="barra-preenchimento"></div>
+                    </div>
+                    <span id="valor-dinheiro">R$ 0</span>
+                </div>
+            </div>
+
+            <div id="log-eventos" class="log-eventos">
+                <p>Bem-vindo à sua nova vida!</p>
+            </div>
+
+            <div class="acoes">
+                <button onclick="avancarIdade()">📅 Envelhecer</button>
+                <button onclick="mostrarMenu('atividades')">🎮 Atividades</button>
+                <button onclick="mostrarMenu('relacionamentos')">💕 Relacionamentos</button>
+                <button onclick="mostrarMenu('trabalho')">💼 Trabalho</button>
+                <button onclick="mostrarMenu('educacao')">📚 Educação</button>
+            </div>
+
+            <!-- Menus -->
+            <div id="menu-atividades" class="menu-popup">
+                <h3>🎮 Atividades</h3>
+                <button onclick="realizarAtividade('academia')">🏋️ Ir à Academia</button>
+                <button onclick="realizarAtividade('biblioteca')">📖 Ler na Biblioteca</button>
+                <button onclick="realizarAtividade('passeio')">🌳 Passear no Parque</button>
+                <button onclick="realizarAtividade('cinema')">🎬 Ir ao Cinema</button>
+                <button onclick="realizarAtividade('meditacao')">🧘 Meditar</button>
+                <button onclick="realizarAtividade('videogame')">🎮 Jogar Videogame</button>
+                <button class="btn-fechar" onclick="fecharMenu()">Fechar</button>
+            </div>
+
+            <div id="menu-relacionamentos" class="menu-popup">
+                <h3>💕 Relacionamentos</h3>
+                <div id="lista-relacionamentos"></div>
+                <button onclick="conhecerPessoa()">👋 Conhecer Alguém</button>
+                <button class="btn-fechar" onclick="fecharMenu()">Fechar</button>
+            </div>
+
+            <div id="menu-trabalho" class="menu-popup">
+                <h3>💼 Trabalho</h3>
+                <div id="trabalho-atual"></div>
+                <div id="lista-empregos"></div>
+                <button class="btn-fechar" onclick="fecharMenu()">Fechar</button>
+            </div>
+
+            <div id="menu-educacao" class="menu-popup">
+                <h3>📚 Educação</h3>
+                <div id="educacao-atual"></div>
+                <div id="lista-cursos"></div>
+                <button class="btn-fechar" onclick="fecharMenu()">Fechar</button>
+            </div>
+        </div>
+
+        <!-- Tela de Game Over -->
+        <div id="tela-gameover" class="tela">
+            <h1>⚰️ Fim de Jogo</h1>
+            <div id="resumo-vida"></div>
+            <button onclick="iniciarNovaVida()">Nova Vida</button>
+        </div>
+    </div>
+
+    <script src="dados.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
