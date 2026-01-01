@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VidaSim - Simulador de Vida Completo">
+    <title>VidaSim - Simulador de Vida</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <h1 class="splash-title">VidaSim</h1>
+            <div class="splash-loader">
+                <div class="loader-bar"></div>
+            </div>
+            <p class="splash-text">Carregando sua vida...</p>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="app-container" style="display: none;">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-content">
+                <h1 class="game-title">VidaSim</h1>
+                <button id="settings-btn" class="icon-btn" aria-label="Configurações">
+                    ⚙️
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Bar -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon">❤️</div>
+                <div class="stat-info">
+                    <span class="stat-label">Saúde</span>
+                    <div class="stat-bar">
+                        <div id="health-bar" class="stat-fill" style="width: 100%"></div>
+                    </div>
+                    <span id="health-value" class="stat-value">100</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">😊</div>
+                <div class="stat-info">
+                    <span class="stat-label">Humor</span>
+                    <div class="stat-bar">
+                        <div id="mood-bar" class="stat-fill mood" style="width: 100%"></div>
+                    </div>
+                    <span id="mood-value" class="stat-value">100</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <span class="stat-label">Dinheiro</span>
+                    <span id="money-value" class="stat-value-large">$1000</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-info">
+                    <span class="stat-label">Reputação</span>
+                    <div class="stat-bar">
+                        <div id="reputation-bar" class="stat-fill reputation" style="width: 50%"></div>
+                    </div>
+                    <span id="reputation-value" class="stat-value">50</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎓</div>
+                <div class="stat-info">
+                    <span class="stat-label">Habilidade</span>
+                    <div class="stat-bar">
+                        <div id="skill-bar" class="stat-fill skill" style="width: 0%"></div>
+                    </div>
+                    <span id="skill-value" class="stat-value">0</span>
+                </div>
+            </div>
+            <div class="stat-card age-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-info">
+                    <span class="stat-label">Idade</span>
+                    <span id="age-value" class="stat-value-large">18 anos</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <main class="timeline-container">
+            <div id="timeline" class="timeline" role="log" aria-live="polite" aria-atomic="false">
+                <!-- Event cards will be dynamically added here -->
+            </div>
+        </main>
+
+        <!-- Bottom Action Bar -->
+        <footer class="bottom-bar">
+            <button id="next-year-btn" class="primary-btn">
+                Avançar 1 Ano
+            </button>
+        </footer>
+    </div>
+
+    <!-- Settings Dialog -->
+    <dialog id="settings-dialog" class="settings-dialog">
+        <div class="dialog-header">
+            <h2>Configurações</h2>
+            <button id="close-settings-btn" class="icon-btn" aria-label="Fechar">✕</button>
+        </div>
+        <div class="dialog-content">
+            <div class="setting-group">
+                <label for="theme-select">Tema</label>
+                <select id="theme-select" class="setting-select">
+                    <option value="light">Claro</option>
+                    <option value="dark">Escuro</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label for="event-density-select">Densidade de Eventos</label>
+                <select id="event-density-select" class="setting-select">
+                    <option value="low">Baixa (1-2 eventos)</option>
+                    <option value="medium">Média (2-3 eventos)</option>
+                    <option value="high">Alta (3-4 eventos)</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label for="animation-speed-select">Velocidade de Animação</label>
+                <select id="animation-speed-select" class="setting-select">
+                    <option value="slow">Lenta</option>
+                    <option value="normal">Normal</option>
+                    <option value="fast">Rápida</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="advanced-mode-toggle" class="setting-checkbox">
+                    <span>Modo Avançado</span>
+                </label>
+            </div>
+            
+            <div class="setting-group" id="hardcore-setting" style="display: none;">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="hardcore-mode-toggle" class="setting-checkbox">
+                    <span>Modo Hardcore (efeitos mais severos)</span>
+                </label>
+            </div>
+            
+            <div class="setting-group">
+                <label for="language-select">Idioma (em breve)</label>
+                <select id="language-select" class="setting-select" disabled>
+                    <option value="pt-BR">Português (BR)</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+            
+            <div class="setting-actions">
+                <button id="reset-progress-btn" class="danger-btn">
+                    Resetar Progresso
+                </button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Shop Dialog -->
+    <dialog id="shop-dialog" class="settings-dialog">
+        <div class="dialog-header">
+            <h2 id="shop-title">Loja</h2>
+            <button id="close-shop-btn" class="icon-btn" aria-label="Fechar">✕</button>
+        </div>
+        <div class="dialog-content">
+            <div id="shop-items" class="shop-items">
+                <!-- Shop items will be dynamically added here -->
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Confirmation Dialog -->
+    <dialog id="confirm-dialog" class="settings-dialog">
+        <div class="dialog-header">
+            <h2 id="confirm-title">Confirmar</h2>
+        </div>
+        <div class="dialog-content">
+            <p id="confirm-message"></p>
+            <div class="dialog-actions">
+                <button id="confirm-yes-btn" class="primary-btn">Sim</button>
+                <button id="confirm-no-btn" class="secondary-btn">Não</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Scripts -->
+    <script src="dados.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
