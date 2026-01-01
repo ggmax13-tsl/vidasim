@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#6366f1">
+    <title>Life Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Splash/Loading Screen -->
+    <div id="splash-screen" class="splash active">
+        <div class="splash-content">
+            <div class="splash-logo">🎮</div>
+            <h1 class="splash-title">Life Simulator</h1>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <p class="splash-text">Loading your life...</p>
+        </div>
+    </div>
+
+    <!-- Main Game Container -->
+    <div id="game-container" class="hidden">
+        <!-- Sticky Top Bar -->
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <h1 class="game-title">Life Simulator</h1>
+            </div>
+            <div class="top-bar-right">
+                <button id="settings-btn" class="icon-btn" aria-label="Settings">⚙️</button>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">❤️</div>
+                <div class="stat-info">
+                    <span class="stat-label">Health</span>
+                    <span id="health-value" class="stat-value">100</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">😊</div>
+                <div class="stat-info">
+                    <span class="stat-label">Mood</span>
+                    <span id="mood-value" class="stat-value">100</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <span class="stat-label">Money</span>
+                    <span id="money-value" class="stat-value">$1000</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-info">
+                    <span class="stat-label">Reputation</span>
+                    <span id="reputation-value" class="stat-value">50</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎓</div>
+                <div class="stat-info">
+                    <span class="stat-label">Skill</span>
+                    <span id="skill-value" class="stat-value">10</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎂</div>
+                <div class="stat-info">
+                    <span class="stat-label">Age</span>
+                    <span id="age-value" class="stat-value">18</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Timeline (aria-live for accessibility) -->
+        <main class="timeline-container">
+            <div id="timeline" class="timeline" role="log" aria-live="polite" aria-atomic="false">
+                <!-- Timeline events will be added here dynamically -->
+            </div>
+        </main>
+
+        <!-- Bottom Action Bar -->
+        <footer class="action-bar">
+            <button id="age-btn" class="action-btn primary">
+                <span class="btn-icon">⏭️</span>
+                <span class="btn-text">Age Up</span>
+            </button>
+            <button id="shop-btn" class="action-btn">
+                <span class="btn-icon">🛒</span>
+                <span class="btn-text">Shop</span>
+            </button>
+        </footer>
+    </div>
+
+    <!-- Settings Dialog -->
+    <dialog id="settings-dialog" class="dialog">
+        <div class="dialog-header">
+            <h2>Settings</h2>
+            <button class="dialog-close" aria-label="Close">✕</button>
+        </div>
+        <div class="dialog-content">
+            <div class="setting-group">
+                <label class="setting-label">
+                    <span>Theme</span>
+                    <select id="theme-select" class="setting-control">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                </label>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label">
+                    <span>Event Density</span>
+                    <select id="density-select" class="setting-control">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </label>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label">
+                    <span>Animation Speed</span>
+                    <select id="animation-select" class="setting-control">
+                        <option value="slow">Slow</option>
+                        <option value="normal">Normal</option>
+                        <option value="fast">Fast</option>
+                    </select>
+                </label>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label checkbox-label">
+                    <input type="checkbox" id="hardcore-check" class="setting-checkbox">
+                    <span>Hardcore Mode (Harsher effects)</span>
+                </label>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label checkbox-label">
+                    <input type="checkbox" id="advanced-check" class="setting-checkbox">
+                    <span>Advanced Mode (Placeholder)</span>
+                </label>
+            </div>
+            <div class="setting-group">
+                <label class="setting-label">
+                    <span>Language (Placeholder)</span>
+                    <select id="language-select" class="setting-control" disabled>
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                    </select>
+                </label>
+            </div>
+        </div>
+        <div class="dialog-footer">
+            <button id="reset-btn" class="btn btn-danger">Reset Progress</button>
+            <button class="btn btn-primary dialog-save">Save</button>
+        </div>
+    </dialog>
+
+    <!-- Shop Dialog -->
+    <dialog id="shop-dialog" class="dialog">
+        <div class="dialog-header">
+            <h2>Shop</h2>
+            <button class="dialog-close" aria-label="Close">✕</button>
+        </div>
+        <div class="dialog-content">
+            <div class="shop-tabs">
+                <button class="shop-tab active" data-tab="cars">🚗 Cars</button>
+                <button class="shop-tab" data-tab="phones">📱 Phones</button>
+            </div>
+            <div id="shop-items" class="shop-items">
+                <!-- Shop items will be added dynamically -->
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Confirm Dialog -->
+    <dialog id="confirm-dialog" class="dialog small">
+        <div class="dialog-header">
+            <h2 id="confirm-title">Confirm</h2>
+        </div>
+        <div class="dialog-content">
+            <p id="confirm-message">Are you sure?</p>
+        </div>
+        <div class="dialog-footer">
+            <button id="confirm-cancel" class="btn">Cancel</button>
+            <button id="confirm-ok" class="btn btn-primary">OK</button>
+        </div>
+    </dialog>
+
+    <!-- Choice Dialog -->
+    <dialog id="choice-dialog" class="dialog">
+        <div class="dialog-header">
+            <h2 id="choice-title">Make a Choice</h2>
+        </div>
+        <div class="dialog-content">
+            <p id="choice-description">What will you do?</p>
+            <div id="choice-options" class="choice-options">
+                <!-- Choice buttons will be added dynamically -->
+            </div>
+        </div>
+    </dialog>
+
+    <script src="dados.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

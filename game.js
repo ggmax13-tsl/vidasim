@@ -1,228 +1,488 @@
-// ===== VIDASIM PRO - GAME.JS COMPLETO =====
+// ===== GAME.JS - Life Simulator Core Logic =====
 
-let personagem = null;
-let jogoIniciado = false;
+// Game State
+let gameState = {
+    health: 100,
+    mood: 100,
+    money: 1000,
+    reputation: 50,
+    skill: 10,
+    age: 18,
+    inventory: {
+        cars: [],
+        phones: []
+    },
+    settings: { ...DADOS.SETTINGS_DEFAULTS }
+};
 
+let currentChoiceCallback = null;
+
+// ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-        document.getElementById('tela-loading').classList.remove('ativa');
-        document.getElementById('tela-inicial').classList.add('ativa');
-    }, 2500);
+    initGame();
 });
 
-function voltarMenuPrincipal() {
-    document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-    document.getElementById('tela-inicial').classList.add('ativa');
+function initGame() {
+    // Show splash screen with loading animation
+    const splash = document.getElementById('splash-screen');
+    splash.classList.add('active');
+    
+    // Load saved game or initialize new game
+    loadGame();
+    
+    // Hide splash after 2 seconds
+    setTimeout(() => {
+        splash.classList.remove('active');
+        document.getElementById('game-container').classList.remove('hidden');
+        
+        // Add welcome event
+        addTimelineEvent({
+            title: 'Welcome to Life Simulator!',
+            description: 'Your life journey begins. Make wise choices!',
+            icon: '🎮',
+            rarity: 'common',
+            effects: { mood: 10 }
+        });
+        
+        updateUI();
+    }, 2000);
+    
+    // Setup event listeners
+    setupEventListeners();
 }
 
-function mostrarCriacaoPersonagem() {
-    document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-    document.getElementById('tela-criacao').classList.add('ativa');
-    document.getElementById('form-criacao').innerHTML = `
-        <div class="form-section"><h3><i class="fas fa-user"></i> Identidade</h3>
-        <div class="form-group"><label>Nome</label><input type="text" id="input-nome" placeholder="Seu nome..."></div>
-        <div class="form-group"><label>Gênero</label><select id="select-genero"><option value="masculino">Masculino</option><option value="feminino">Feminino</option></select></div></div>
-        <div class="form-section"><h3><i class="fas fa-home"></i> Família</h3>
-        <div class="form-group"><label>Classe Social</label><select id="select-classe"><option value="pobre">Classe Baixa</option><option value="media" selected>Classe Média</option><option value="alta">Classe Alta</option><option value="rica">Rica</option></select></div></div>
-        <button class="btn-iniciar-vida" onclick="iniciarVidaPersonalizada()"><i class="fas fa-play"></i> Começar Vida</button>`;
-}
-
-function iniciarVidaAleatoria() {
-    const g = Math.random() > 0.5 ? 'masculino' : 'feminino';
-    const n = DADOS.nomes.brasil[g === 'masculino' ? 'masculinos' : 'femininos'];
-    criarPersonagem({nome: n[Math.floor(Math.random()*n.length)], genero: g, classe: ['pobre','media','alta','rica'][Math.floor(Math.random()*4)]});
-}
-
-function iniciarVidaPersonalizada() {
-    criarPersonagem({nome: document.getElementById('input-nome').value || 'Jogador', genero: document.getElementById('select-genero').value, classe: document.getElementById('select-classe').value});
-}
-
-function criarPersonagem(c) {
-    const din = {pobre:0,media:5000,alta:50000,rica:500000};
-    personagem = {
-        nome: c.nome, sobrenome: DADOS.sobrenomes[Math.floor(Math.random()*DADOS.sobrenomes.length)], genero: c.genero, idade: 0,
-        cidade: DADOS.cidades.brasil[Math.floor(Math.random()*DADOS.cidades.brasil.length)], classe: c.classe, vivo: true,
-        felicidade: 80+Math.floor(Math.random()*20), saude: 85+Math.floor(Math.random()*15), inteligencia: 20+Math.floor(Math.random()*30), aparencia: 40+Math.floor(Math.random()*40), karma: 50,
-        dinheiro: din[c.classe], salario: 0,
-        familia: {
-            mae: {nome: DADOS.nomes.brasil.femininos[Math.floor(Math.random()*30)], viva: true, afinidade: 85+Math.floor(Math.random()*15), idade: 25+Math.floor(Math.random()*10)},
-            pai: {nome: DADOS.nomes.brasil.masculinos[Math.floor(Math.random()*30)], vivo: true, afinidade: 80+Math.floor(Math.random()*15), idade: 27+Math.floor(Math.random()*10)}
-        },
-        relacionamentos: [], emprego: null, eventos: [], conquistas: []
-    };
-    iniciarJogo();
-}
-
-function iniciarJogo() {
-    document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-    document.getElementById('tela-jogo').classList.add('ativa');
-    adicionarEvento('Você nasceu em '+personagem.cidade+'! 👶', 'positivo', 'fa-baby');
-    renderizarStatus(); renderizarMenuAcoes(); atualizarInterface();
-}
-
-function atualizarInterface() {
-    document.getElementById('nome-personagem').textContent = personagem.nome + ' ' + personagem.sobrenome;
-    document.getElementById('info-personagem').textContent = personagem.idade + ' anos • ' + personagem.cidade;
-    document.getElementById('mini-dinheiro').innerHTML = '<i class="fas fa-wallet"></i> R$ ' + personagem.dinheiro.toLocaleString('pt-BR');
-    document.getElementById('idade-display').textContent = personagem.idade;
-    ['felicidade','saude','inteligencia','aparencia'].forEach(s => {
-        const v = Math.max(0, Math.min(100, personagem[s]));
-        document.getElementById('bar-'+s).style.width = v+'%';
-        document.getElementById('val-'+s).textContent = Math.floor(v)+'%';
+function setupEventListeners() {
+    // Age up button
+    document.getElementById('age-btn').addEventListener('click', ageUp);
+    
+    // Shop button
+    document.getElementById('shop-btn').addEventListener('click', openShop);
+    
+    // Settings button
+    document.getElementById('settings-btn').addEventListener('click', openSettings);
+    
+    // Dialog close buttons
+    document.querySelectorAll('.dialog-close').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.target.closest('dialog').close();
+        });
+    });
+    
+    // Settings dialog save button
+    document.querySelector('.dialog-save').addEventListener('click', saveSettings);
+    
+    // Reset button
+    document.getElementById('reset-btn').addEventListener('click', confirmReset);
+    
+    // Theme select
+    document.getElementById('theme-select').addEventListener('change', (e) => {
+        applyTheme(e.target.value);
+    });
+    
+    // Shop tabs
+    document.querySelectorAll('.shop-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            switchShopTab(e.target.dataset.tab);
+        });
+    });
+    
+    // Confirm dialog buttons
+    document.getElementById('confirm-cancel').addEventListener('click', () => {
+        document.getElementById('confirm-dialog').close();
+    });
+    
+    document.getElementById('confirm-ok').addEventListener('click', () => {
+        if (currentChoiceCallback) {
+            currentChoiceCallback();
+            currentChoiceCallback = null;
+        }
+        document.getElementById('confirm-dialog').close();
     });
 }
 
-function renderizarStatus() {
-    document.getElementById('status-container').innerHTML = ['felicidade','saude','inteligencia','aparencia'].map(s => 
-        '<div class="status-bar" data-stat="'+s+'"><div class="status-icon"><i class="fas fa-'+(s==='felicidade'?'smile':s==='saude'?'heart':s==='inteligencia'?'brain':'star')+'"></i></div><div class="status-info"><span class="status-label">'+s.charAt(0).toUpperCase()+s.slice(1)+'</span><div class="bar-container"><div class="bar-fill" id="bar-'+s+'"></div></div></div><span class="status-value" id="val-'+s+'">100%</span></div>'
-    ).join('');
-}
-
-function renderizarMenuAcoes() {
-    document.getElementById('menu-acoes').innerHTML = '<button class="btn-acao" onclick="abrirMenu(\'familia\')"><i class="fas fa-home"></i><span>Família</span></button><button class="btn-acao" onclick="abrirMenu(\'atividades\')"><i class="fas fa-running"></i><span>Atividades</span></button><button class="btn-acao" onclick="abrirMenu(\'trabalho\')"><i class="fas fa-briefcase"></i><span>Trabalho</span></button><button class="btn-acao" onclick="abrirMenu(\'relacionamentos\')"><i class="fas fa-users"></i><span>Pessoas</span></button><button class="btn-acao" onclick="abrirMenu(\'bens\')"><i class="fas fa-car"></i><span>Bens</span></button>';
-}
-
-function adicionarEvento(texto, tipo, icone) {
-    const log = document.getElementById('log-eventos');
-    const ev = document.createElement('div');
-    ev.className = 'evento evento-'+tipo;
-    ev.innerHTML = '<div class="evento-icon"><i class="fas '+(icone||'fa-circle')+'"></i></div><div class="evento-content"><p class="evento-texto">'+texto+'</p><span class="evento-idade">'+personagem.idade+' anos</span></div>';
-    log.insertBefore(ev, log.firstChild);
-}
-
-function avancarIdade() {
-    personagem.idade++;
-    if(personagem.familia.mae.viva) personagem.familia.mae.idade++;
-    if(personagem.familia.pai.vivo) personagem.familia.pai.idade++;
-    if(personagem.emprego) { personagem.dinheiro += personagem.salario; adicionarEvento('Salário recebido: R$ '+personagem.salario.toLocaleString('pt-BR'), 'positivo', 'fa-money-bill'); }
-    if(Math.random()>0.5) { const evs = personagem.idade<12 ? DADOS.eventos.infancia : DADOS.eventos.adulto; const e = evs[Math.floor(Math.random()*evs.length)]; if(e.felicidade) personagem.felicidade=Math.min(100,Math.max(0,personagem.felicidade+e.felicidade)); if(e.dinheiro) personagem.dinheiro+=e.dinheiro; adicionarEvento(e.texto, e.felicidade>=0?'positivo':'negativo', e.icone); }
-    personagem.felicidade = Math.max(0, personagem.felicidade - Math.random()*2);
-    personagem.saude = Math.max(0, personagem.saude - (personagem.idade>50?2:0.5));
-    if(personagem.saude<=0 || (personagem.idade>70 && Math.random()*100<personagem.idade-50)) { morrer(); return; }
-    atualizarInterface(); mostrarToast('Você fez '+personagem.idade+' anos!', 'sucesso');
-}
-
-function morrer() {
-    document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-    document.getElementById('tela-gameover').classList.add('ativa');
-    document.getElementById('go-nome').textContent = personagem.nome + ' ' + personagem.sobrenome;
-    document.getElementById('go-datas').textContent = '2026 - ' + (2026+personagem.idade);
-    document.getElementById('go-causa').textContent = personagem.saude<=0 ? 'Causa: doença' : 'Causa: velhice';
-    document.getElementById('go-stats').innerHTML = '<div class="stat-item"><i class="fas fa-birthday-cake"></i><span>'+personagem.idade+' anos</span></div><div class="stat-item"><i class="fas fa-money-bill"></i><span>R$ '+personagem.dinheiro.toLocaleString('pt-BR')+'</span></div>';
-}
-
-function abrirMenu(t) {
-    const m = document.getElementById('modal-menu'), b = document.getElementById('modal-body'), ti = document.getElementById('modal-titulo');
-    m.classList.add('ativo');
-    if(t==='familia') { ti.innerHTML='<i class="fas fa-home"></i> Família'; b.innerHTML=(personagem.familia.mae.viva?'<div class="menu-item" onclick="interagirFamiliar(\'mae\')"><div class="menu-item-icon" style="background:rgba(253,121,168,0.2);color:#fd79a8;"><i class="fas fa-female"></i></div><div class="menu-item-info"><h4>'+personagem.familia.mae.nome+' (Mãe)</h4><p>Afinidade: '+personagem.familia.mae.afinidade+'%</p></div></div>':'')+(personagem.familia.pai.vivo?'<div class="menu-item" onclick="interagirFamiliar(\'pai\')"><div class="menu-item-icon" style="background:rgba(9,132,227,0.2);color:#0984e3;"><i class="fas fa-male"></i></div><div class="menu-item-info"><h4>'+personagem.familia.pai.nome+' (Pai)</h4><p>Afinidade: '+personagem.familia.pai.afinidade+'%</p></div></div>':''); }
-    else if(t==='atividades') { ti.innerHTML='<i class="fas fa-running"></i> Atividades'; b.innerHTML=DADOS.atividades.exercicio.map((a,i)=>'<div class="menu-item" onclick="realizarAtividade(\'exercicio\','+i+')"><div class="menu-item-icon" style="background:rgba(0,184,148,0.2);color:#00b894;"><i class="fas '+a.icone+'"></i></div><div class="menu-item-info"><h4>'+a.nome+'</h4><p>+'+a.saude+' Saúde</p></div><span style="color:#00b894;">R$'+a.custo+'</span></div>').join('')+DADOS.atividades.lazer.map((a,i)=>'<div class="menu-item" onclick="realizarAtividade(\'lazer\','+i+')"><div class="menu-item-icon" style="background:rgba(253,203,110,0.2);color:#fdcb6e;"><i class="fas '+a.icone+'"></i></div><div class="menu-item-info"><h4>'+a.nome+'</h4><p>+'+a.felicidade+' Felicidade</p></div><span style="color:#fdcb6e;">R$'+a.custo+'</span></div>').join(''); }
-    else if(t==='trabalho') { ti.innerHTML='<i class="fas fa-briefcase"></i> Trabalho'; b.innerHTML=personagem.emprego?'<div class="menu-item"><div class="menu-item-info"><h4>'+personagem.emprego.nome+'</h4><p>R$ '+personagem.salario.toLocaleString('pt-BR')+'/ano</p></div></div><button class="menu-item" onclick="personagem.emprego=null;personagem.salario=0;fecharModal();mostrarToast(\'Demitiu-se\',\'aviso\');"><span style="color:#d63031;">Pedir Demissão</span></button>':(personagem.idade>=18?DADOS.empregos.entrada.map((e,i)=>'<div class="menu-item" onclick="candidatar('+i+')"><div class="menu-item-info"><h4>'+e.nome+'</h4><p>R$ '+(e.salario*12).toLocaleString('pt-BR')+'/ano</p></div></div>').join(''):'<p style="color:#888;">Mínimo 18 anos</p>'); }
-    else if(t==='relacionamentos') { ti.innerHTML='<i class="fas fa-users"></i> Pessoas'; b.innerHTML='<div class="menu-item" onclick="conhecerPessoa()"><div class="menu-item-icon" style="background:rgba(108,92,231,0.2);color:#6c5ce7;"><i class="fas fa-user-plus"></i></div><div class="menu-item-info"><h4>Conhecer alguém</h4></div></div>'+personagem.relacionamentos.map((r,i)=>'<div class="menu-item" onclick="interagirRel('+i+')"><div class="menu-item-info"><h4>'+r.nome+'</h4><p>'+r.tipo+' • '+r.afinidade+'%</p></div></div>').join(''); }
-    else { b.innerHTML='<p style="color:#888;">Em breve!</p>'; }
-}
-
-function fecharModal() { document.getElementById('modal-menu').classList.remove('ativo'); }
-
-function interagirFamiliar(t) {
-    fecharModal();
-    const f = t==='mae'?personagem.familia.mae:personagem.familia.pai;
-    document.getElementById('dialogo-titulo').textContent = f.nome;
-    document.getElementById('dialogo-texto').textContent = 'O que fazer?';
-    document.getElementById('dialogo-opcoes').innerHTML = '<button class="btn-opcao" onclick="pedirDinheiro(\''+t+'\')"><i class="fas fa-money-bill"></i> Pedir Dinheiro</button><button class="btn-opcao" onclick="conversar(\''+t+'\')"><i class="fas fa-comments"></i> Conversar</button><button class="btn-opcao" onclick="abracar(\''+t+'\')"><i class="fas fa-heart"></i> Abraçar</button><button class="btn-opcao" onclick="fecharDialogo()"><i class="fas fa-times"></i> Cancelar</button>';
-    document.getElementById('modal-dialogo').classList.add('ativo');
-}
-
-function fecharDialogo() { document.getElementById('modal-dialogo').classList.remove('ativo'); }
-
-function pedirDinheiro(t) {
-    fecharDialogo();
-    const f = t==='mae'?personagem.familia.mae:personagem.familia.pai;
-    const lim = DADOS.familia[t].limiteMessada[personagem.classe];
-    document.getElementById('dialogo-titulo').textContent = 'Pedir quanto?';
-    document.getElementById('dialogo-texto').textContent = 'Escolha o valor:';
-    document.getElementById('dialogo-opcoes').innerHTML = DADOS.interacoesFamilia.pedirDinheiro.opcoes.map(o=>'<button class="btn-opcao" onclick="executarPedido(\''+t+'\','+o.valor+','+o.dificuldade+')"><i class="fas fa-coins"></i> '+o.texto+'</button>').join('')+'<button class="btn-opcao" onclick="fecharDialogo()"><i class="fas fa-times"></i> Cancelar</button>';
-    document.getElementById('modal-dialogo').classList.add('ativo');
-}
-
-function executarPedido(t,val,dif) {
-    fecharDialogo();
-    const f = t==='mae'?personagem.familia.mae:personagem.familia.pai;
-    if(f.afinidade + Math.random()*40 > dif) {
-        personagem.dinheiro += val;
-        const r = DADOS.interacoesFamilia.pedirDinheiro.respostas.sucesso[Math.floor(Math.random()*3)];
-        mostrarResultado('sucesso','Conseguiu!',f.nome+': "'+r+'"',[{texto:'+R$'+val,tipo:'positivo'}]);
-        adicionarEvento(f.nome+' te deu R$'+val,'positivo','fa-money-bill');
-    } else {
-        f.afinidade = Math.max(0, f.afinidade-5);
-        const r = DADOS.interacoesFamilia.pedirDinheiro.respostas.falha[Math.floor(Math.random()*3)];
-        mostrarResultado('falha','Recusou',f.nome+': "'+r+'"',[{texto:'-5 Afinidade',tipo:'negativo'}]);
+// ===== GAME LOGIC =====
+function ageUp() {
+    gameState.age++;
+    
+    // Apply age effects
+    const ageEffects = {
+        health: -1,
+        mood: -2
+    };
+    
+    applyEffects(ageEffects);
+    
+    // Random event generation based on event density
+    const densityMultiplier = DADOS.EVENT_DENSITY[gameState.settings.eventDensity];
+    if (Math.random() < densityMultiplier) {
+        const event = selectRandomEvent();
+        if (event) {
+            addTimelineEvent(event);
+        }
     }
-    atualizarInterface();
+    
+    // Random flavor text (lower probability)
+    if (Math.random() < 0.2) {
+        const flavor = DADOS.FLAVOR[Math.floor(Math.random() * DADOS.FLAVOR.length)];
+        addFlavorText(flavor);
+    }
+    
+    // Random windfall/setback (lower probability)
+    if (Math.random() < 0.1) {
+        if (Math.random() < 0.5) {
+            const windfall = DADOS.WINDFALLS[Math.floor(Math.random() * DADOS.WINDFALLS.length)];
+            addTimelineEvent({
+                title: windfall.text,
+                description: 'Lucky you!',
+                icon: windfall.icon,
+                rarity: 'common',
+                effects: windfall.effects
+            });
+        } else {
+            const setback = DADOS.SETBACKS[Math.floor(Math.random() * DADOS.SETBACKS.length)];
+            addTimelineEvent({
+                title: setback.text,
+                description: 'Bad luck...',
+                icon: setback.icon,
+                rarity: 'common',
+                effects: setback.effects
+            });
+        }
+    }
+    
+    updateUI();
+    saveGame();
 }
 
-function conversar(t) { fecharDialogo(); const f=t==='mae'?personagem.familia.mae:personagem.familia.pai; f.afinidade=Math.min(100,f.afinidade+5); personagem.felicidade=Math.min(100,personagem.felicidade+5); mostrarResultado('sucesso','Boa conversa!','Vocês conversaram.',[{texto:'+5 Afinidade',tipo:'positivo'}]); adicionarEvento('Conversou com '+f.nome,'positivo','fa-comments'); atualizarInterface(); }
-function abracar(t) { fecharDialogo(); const f=t==='mae'?personagem.familia.mae:personagem.familia.pai; f.afinidade=Math.min(100,f.afinidade+8); personagem.felicidade=Math.min(100,personagem.felicidade+10); mostrarResultado('sucesso','Abraço!',f.nome+' te abraçou.',[{texto:'+10 Felicidade',tipo:'positivo'}]); atualizarInterface(); }
-
-function realizarAtividade(tipo,i) {
-    const a = DADOS.atividades[tipo][i];
-    if(personagem.dinheiro<a.custo) { mostrarToast('Sem dinheiro!','erro'); return; }
-    personagem.dinheiro -= a.custo;
-    if(a.saude) personagem.saude = Math.min(100, personagem.saude+a.saude);
-    if(a.felicidade) personagem.felicidade = Math.min(100, personagem.felicidade+a.felicidade);
-    if(a.inteligencia) personagem.inteligencia = Math.min(100, personagem.inteligencia+a.inteligencia);
-    fecharModal(); adicionarEvento('Você foi '+a.nome.toLowerCase(),'positivo',a.icone); atualizarInterface();
+function selectRandomEvent() {
+    // Get all event categories
+    const categories = Object.keys(DADOS.EVENTS);
+    const category = categories[Math.floor(Math.random() * categories.length)];
+    
+    // Select rarity based on weights
+    const rarity = selectRarity();
+    
+    // Get events of that category and rarity
+    const events = DADOS.EVENTS[category][rarity];
+    if (!events || events.length === 0) return null;
+    
+    const event = events[Math.floor(Math.random() * events.length)];
+    return { ...event, rarity };
 }
 
-function candidatar(i) {
-    const e = DADOS.empregos.entrada[i];
-    if(Math.random()*100 < 50+personagem.inteligencia/2) { personagem.emprego=e; personagem.salario=e.salario*12; fecharModal(); adicionarEvento('Contratado como '+e.nome+'!','positivo','fa-briefcase'); mostrarToast('Contratado!','sucesso'); }
-    else { mostrarToast('Não selecionado','erro'); }
-    atualizarInterface();
+function selectRarity() {
+    const total = DADOS.RARITY_WEIGHTS.common + DADOS.RARITY_WEIGHTS.rare + DADOS.RARITY_WEIGHTS.epic;
+    const rand = Math.random() * total;
+    
+    if (rand < DADOS.RARITY_WEIGHTS.common) return 'common';
+    if (rand < DADOS.RARITY_WEIGHTS.common + DADOS.RARITY_WEIGHTS.rare) return 'rare';
+    return 'epic';
 }
 
-function conhecerPessoa() {
-    fecharModal();
-    const g = Math.random()>0.5?'masculino':'feminino';
-    const n = DADOS.nomes.brasil[g==='masculino'?'masculinos':'femininos'][Math.floor(Math.random()*30)];
-    personagem.relacionamentos.push({nome:n,genero:g,tipo:'Conhecido',afinidade:30+Math.floor(Math.random()*30)});
-    adicionarEvento('Conheceu '+n+'!','positivo','fa-user-plus');
-    mostrarToast('Conheceu '+n+'!','sucesso');
+function applyEffects(effects) {
+    if (!effects) return;
+    
+    // Apply hardcore multiplier if enabled
+    const hardcoreMultiplier = gameState.settings.hardcore ? 1.5 : 1.0;
+    
+    // Apply each effect with clamping
+    if (effects.health !== undefined) {
+        const change = effects.health * (effects.health < 0 ? hardcoreMultiplier : 1);
+        gameState.health = clamp(gameState.health + change, 0, 100);
+    }
+    if (effects.mood !== undefined) {
+        const change = effects.mood * (effects.mood < 0 ? hardcoreMultiplier : 1);
+        gameState.mood = clamp(gameState.mood + change, 0, 100);
+    }
+    if (effects.money !== undefined) {
+        const change = effects.money * (effects.money < 0 ? hardcoreMultiplier : 1);
+        gameState.money = Math.max(0, gameState.money + change);
+    }
+    if (effects.reputation !== undefined) {
+        gameState.reputation = clamp(gameState.reputation + effects.reputation, 0, 100);
+    }
+    if (effects.skill !== undefined) {
+        gameState.skill = clamp(gameState.skill + effects.skill, 0, 100);
+    }
 }
 
-function interagirRel(i) {
-    fecharModal();
-    const r = personagem.relacionamentos[i];
-    document.getElementById('dialogo-titulo').textContent = r.nome;
-    document.getElementById('dialogo-texto').textContent = r.tipo+' • '+r.afinidade+'%';
-    document.getElementById('dialogo-opcoes').innerHTML = '<button class="btn-opcao" onclick="conversarRel('+i+')"><i class="fas fa-comments"></i> Conversar</button><button class="btn-opcao" onclick="flertarRel('+i+')"><i class="fas fa-heart"></i> Flertar</button><button class="btn-opcao" onclick="fecharDialogo()"><i class="fas fa-times"></i> Cancelar</button>';
-    document.getElementById('modal-dialogo').classList.add('ativo');
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
 }
 
-function conversarRel(i) { fecharDialogo(); personagem.relacionamentos[i].afinidade=Math.min(100,personagem.relacionamentos[i].afinidade+8); if(personagem.relacionamentos[i].afinidade>=60&&personagem.relacionamentos[i].tipo==='Conhecido') personagem.relacionamentos[i].tipo='Amigo'; mostrarResultado('sucesso','Boa conversa!','Afinidade aumentou!',[{texto:'+8',tipo:'positivo'}]); atualizarInterface(); }
-function flertarRel(i) { fecharDialogo(); const r=personagem.relacionamentos[i]; if(Math.random()*100<r.afinidade+personagem.aparencia/2) { r.afinidade=Math.min(100,r.afinidade+15); if(r.afinidade>=75) r.tipo='Ficante'; mostrarResultado('sucesso','Deu certo!','Gostou!',[{texto:'+15',tipo:'positivo'}]); } else { r.afinidade=Math.max(0,r.afinidade-10); mostrarResultado('falha','Não rolou...','Rejeitou.',[{texto:'-10',tipo:'negativo'}]); } atualizarInterface(); }
-
-function mostrarResultado(tipo,titulo,texto,stats) {
-    document.getElementById('resultado-icon').className = 'resultado-icon '+tipo;
-    document.getElementById('resultado-icon').innerHTML = '<i class="fas '+(tipo==='sucesso'?'fa-check':'fa-times')+'"></i>';
-    document.getElementById('resultado-titulo').textContent = titulo;
-    document.getElementById('resultado-texto').textContent = texto;
-    document.getElementById('resultado-stats').innerHTML = stats.map(s=>'<span class="stat-change '+s.tipo+'">'+s.texto+'</span>').join('');
-    document.getElementById('modal-resultado').classList.add('ativo');
+// ===== UI RENDERING =====
+function updateUI() {
+    // Update stat values
+    document.getElementById('health-value').textContent = Math.floor(gameState.health);
+    document.getElementById('mood-value').textContent = Math.floor(gameState.mood);
+    document.getElementById('money-value').textContent = `$${Math.floor(gameState.money)}`;
+    document.getElementById('reputation-value').textContent = Math.floor(gameState.reputation);
+    document.getElementById('skill-value').textContent = Math.floor(gameState.skill);
+    document.getElementById('age-value').textContent = gameState.age;
+    
+    // Update stat card colors based on values
+    updateStatCardColors();
 }
 
-function fecharResultado() { document.getElementById('modal-resultado').classList.remove('ativo'); }
-
-function mostrarToast(msg,tipo) {
-    const c = document.getElementById('toast-container');
-    const t = document.createElement('div');
-    t.className = 'toast '+tipo;
-    t.innerHTML = '<i class="fas '+(tipo==='sucesso'?'fa-check':'fa-times')+'"></i><span>'+msg+'</span>';
-    c.appendChild(t);
-    setTimeout(()=>t.remove(),3000);
+function updateStatCardColors() {
+    const stats = ['health', 'mood', 'reputation', 'skill'];
+    stats.forEach(stat => {
+        const value = gameState[stat];
+        const card = document.querySelector(`#${stat}-value`).closest('.stat-card');
+        
+        if (value < 30) {
+            card.style.borderColor = 'var(--color-danger)';
+        } else if (value < 60) {
+            card.style.borderColor = 'var(--color-warning)';
+        } else {
+            card.style.borderColor = 'var(--color-success)';
+        }
+    });
 }
 
-function salvarJogo() { localStorage.setItem('vidasim_save',JSON.stringify(personagem)); mostrarToast('Salvo!','sucesso'); }
-function carregarJogo() { const s=localStorage.getItem('vidasim_save'); if(s){personagem=JSON.parse(s);iniciarJogo();} }
-function mostrarConfiguracoes() { mostrarToast('Em breve!','aviso'); }
-function mostrarConquistas() { mostrarToast('Em breve!','aviso'); }
-function iniciarNovaVida() { location.reload(); }
+function addTimelineEvent(event) {
+    const timeline = document.getElementById('timeline');
+    const eventCard = document.createElement('div');
+    eventCard.className = `event-card ${event.rarity}`;
+    
+    // Build effects HTML
+    let effectsHTML = '';
+    if (event.effects) {
+        effectsHTML = '<div class="event-effects">';
+        for (const [key, value] of Object.entries(event.effects)) {
+            const sign = value > 0 ? '+' : '';
+            const type = value > 0 ? 'positive' : 'negative';
+            const label = key.charAt(0).toUpperCase() + key.slice(1);
+            effectsHTML += `<span class="effect-badge ${type}">${sign}${value} ${label}</span>`;
+        }
+        effectsHTML += '</div>';
+    }
+    
+    eventCard.innerHTML = `
+        <div class="event-header">
+            <span class="event-icon">${event.icon}</span>
+            <h3 class="event-title">${event.title}</h3>
+            <span class="event-rarity ${event.rarity}">${event.rarity}</span>
+        </div>
+        <p class="event-description">${event.description}</p>
+        ${effectsHTML}
+    `;
+    
+    timeline.insertBefore(eventCard, timeline.firstChild);
+    
+    // Apply effects if no choices
+    if (!event.choices && event.effects) {
+        applyEffects(event.effects);
+        updateUI();
+    }
+    
+    // Show choices dialog if event has choices
+    if (event.choices) {
+        showChoices(event);
+    }
+    
+    // Limit timeline to last 20 events
+    while (timeline.children.length > 20) {
+        timeline.removeChild(timeline.lastChild);
+    }
+}
+
+function addFlavorText(text) {
+    const timeline = document.getElementById('timeline');
+    const flavorCard = document.createElement('div');
+    flavorCard.className = 'event-card common';
+    flavorCard.style.opacity = '0.7';
+    flavorCard.innerHTML = `
+        <div class="event-header">
+            <span class="event-icon">💭</span>
+            <h3 class="event-title">Daily Life</h3>
+        </div>
+        <p class="event-description">${text}</p>
+    `;
+    timeline.insertBefore(flavorCard, timeline.firstChild);
+}
+
+function showChoices(event) {
+    const dialog = document.getElementById('choice-dialog');
+    const title = document.getElementById('choice-title');
+    const description = document.getElementById('choice-description');
+    const options = document.getElementById('choice-options');
+    
+    title.textContent = event.title;
+    description.textContent = event.description;
+    
+    options.innerHTML = '';
+    event.choices.forEach((choice, index) => {
+        const button = document.createElement('button');
+        button.className = 'choice-btn';
+        button.textContent = choice.text;
+        button.addEventListener('click', () => {
+            applyEffects(choice.effects);
+            updateUI();
+            dialog.close();
+        });
+        options.appendChild(button);
+    });
+    
+    dialog.showModal();
+}
+
+// ===== SHOP SYSTEM =====
+function openShop() {
+    const dialog = document.getElementById('shop-dialog');
+    switchShopTab('cars');
+    dialog.showModal();
+}
+
+function switchShopTab(tab) {
+    // Update tab buttons
+    document.querySelectorAll('.shop-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+    
+    // Render shop items
+    const container = document.getElementById('shop-items');
+    container.innerHTML = '';
+    
+    const items = DADOS.SHOP[tab];
+    items.forEach(item => {
+        const itemCard = document.createElement('div');
+        itemCard.className = 'shop-item';
+        itemCard.innerHTML = `
+            <div class="shop-item-icon">${item.icon}</div>
+            <div class="shop-item-name">${item.name}</div>
+            <div class="shop-item-price">$${item.price}</div>
+        `;
+        itemCard.addEventListener('click', () => purchaseItem(item, tab));
+        container.appendChild(itemCard);
+    });
+}
+
+function purchaseItem(item, category) {
+    if (gameState.money >= item.price) {
+        // Check if already owned
+        if (gameState.inventory[category].includes(item.id)) {
+            showConfirm('Already Owned', 'You already own this item!');
+            return;
+        }
+        
+        gameState.money -= item.price;
+        gameState.reputation += item.reputation;
+        gameState.inventory[category].push(item.id);
+        
+        addTimelineEvent({
+            title: `Purchased ${item.name}`,
+            description: `You bought a ${item.name}!`,
+            icon: item.icon,
+            rarity: 'common',
+            effects: { reputation: item.reputation }
+        });
+        
+        updateUI();
+        saveGame();
+        document.getElementById('shop-dialog').close();
+    } else {
+        showConfirm('Not Enough Money', `You need $${item.price} but only have $${Math.floor(gameState.money)}.`);
+    }
+}
+
+// ===== SETTINGS SYSTEM =====
+function openSettings() {
+    const dialog = document.getElementById('settings-dialog');
+    
+    // Load current settings
+    document.getElementById('theme-select').value = gameState.settings.theme;
+    document.getElementById('density-select').value = gameState.settings.eventDensity;
+    document.getElementById('animation-select').value = gameState.settings.animationSpeed;
+    document.getElementById('hardcore-check').checked = gameState.settings.hardcore;
+    document.getElementById('advanced-check').checked = gameState.settings.advanced;
+    document.getElementById('language-select').value = gameState.settings.language;
+    
+    dialog.showModal();
+}
+
+function saveSettings() {
+    gameState.settings.theme = document.getElementById('theme-select').value;
+    gameState.settings.eventDensity = document.getElementById('density-select').value;
+    gameState.settings.animationSpeed = document.getElementById('animation-select').value;
+    gameState.settings.hardcore = document.getElementById('hardcore-check').checked;
+    gameState.settings.advanced = document.getElementById('advanced-check').checked;
+    gameState.settings.language = document.getElementById('language-select').value;
+    
+    applyTheme(gameState.settings.theme);
+    applyAnimationSpeed(gameState.settings.animationSpeed);
+    
+    saveGame();
+    document.getElementById('settings-dialog').close();
+}
+
+function applyTheme(theme) {
+    document.body.setAttribute('data-theme', theme);
+}
+
+function applyAnimationSpeed(speed) {
+    const multiplier = DADOS.ANIMATION_SPEED[speed];
+    document.documentElement.style.setProperty('--transition-fast', `${150 * multiplier}ms ease`);
+    document.documentElement.style.setProperty('--transition-normal', `${300 * multiplier}ms ease`);
+    document.documentElement.style.setProperty('--transition-slow', `${500 * multiplier}ms ease`);
+}
+
+function confirmReset() {
+    currentChoiceCallback = resetGame;
+    showConfirm('Reset Progress', 'Are you sure you want to reset all progress? This cannot be undone!');
+}
+
+function resetGame() {
+    localStorage.removeItem(DADOS.SAVE_KEY);
+    location.reload();
+}
+
+function showConfirm(title, message) {
+    const dialog = document.getElementById('confirm-dialog');
+    document.getElementById('confirm-title').textContent = title;
+    document.getElementById('confirm-message').textContent = message;
+    dialog.showModal();
+}
+
+// ===== SAVE/LOAD SYSTEM =====
+function saveGame() {
+    try {
+        const saveData = JSON.stringify(gameState);
+        localStorage.setItem(DADOS.SAVE_KEY, saveData);
+    } catch (e) {
+        console.error('Failed to save game:', e);
+    }
+}
+
+function loadGame() {
+    try {
+        const saveData = localStorage.getItem(DADOS.SAVE_KEY);
+        if (saveData) {
+            const loaded = JSON.parse(saveData);
+            // Merge with default settings to handle new settings
+            gameState = {
+                ...gameState,
+                ...loaded,
+                settings: { ...DADOS.SETTINGS_DEFAULTS, ...loaded.settings }
+            };
+            applyTheme(gameState.settings.theme);
+            applyAnimationSpeed(gameState.settings.animationSpeed);
+        }
+    } catch (e) {
+        console.error('Failed to load game:', e);
+        // If load fails, start fresh
+        gameState = {
+            health: 100,
+            mood: 100,
+            money: 1000,
+            reputation: 50,
+            skill: 10,
+            age: 18,
+            inventory: {
+                cars: [],
+                phones: []
+            },
+            settings: { ...DADOS.SETTINGS_DEFAULTS }
+        };
+    }
+}
