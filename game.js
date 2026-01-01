@@ -127,7 +127,16 @@ function resetProgress() {
 
 // === SCREEN MANAGEMENT ===
 function showScreen(screenId) {
+  // Hide splash screen if showing
+  const splashScreen = document.getElementById('splash-screen');
+  if (splashScreen) {
+    splashScreen.classList.remove('active');
+  }
+  
+  // Hide all other screens
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  
+  // Show target screen (can be splash or regular screen)
   const screen = document.getElementById(screenId);
   if (screen) {
     screen.classList.add('active');
