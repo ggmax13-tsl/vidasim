@@ -636,6 +636,35 @@ function loadGame() {
   }
 }
 
+// === AGE RESTRICTIONS ===
+function canDoAction(action) {
+  const ageRestrictions = {
+    'askMoney': 3,        // Pedir dinheiro aos 3 anos
+    'shop': 16,           // Comprar coisas aos 16 anos
+    'work': 14,           // Trabalhar aos 14 anos
+    'date': 10,           // Namorar aos 10 anos
+    'meetPeople': 5,      // Conhecer pessoas aos 5 anos
+    'activities': 3,      // Fazer atividades aos 3 anos
+    'conversation': 2     // Conversar aos 2 anos
+  };
+  
+  return player.age >= (ageRestrictions[action] || 0);
+}
+
+function showAgeRestrictionMessage(action) {
+  const messages = {
+    'askMoney': 'Você é muito jovem para pedir dinheiro!',
+    'shop': 'Você precisa ter pelo menos 16 anos para fazer compras!',
+    'work': 'Você precisa ter pelo menos 14 anos para trabalhar!',
+    'date': 'Você precisa ter pelo menos 10 anos para namorar!',
+    'meetPeople': 'Você é muito jovem para conhecer pessoas sozinho!',
+    'activities': 'Você é muito jovem para fazer esta atividade!',
+    'conversation': 'Você é muito jovem para ter conversas complexas!'
+  };
+  
+  showToast(messages[action] || 'Você é muito jovem para esta ação!', 'warning');
+}
+
 // === ACTIONS MENU ===
 function showActions(category) {
   const modal = document.getElementById('actions-modal');
@@ -717,23 +746,39 @@ function interactWithFamily(member) {
   const person = member === 'mother' ? player.parents.mother : player.parents.father;
   const title = person.name;
   
-  showInteractionModal(title, [
-    {
-      text: '<i class="fas fa-money-bill"></i> Pedir Dinheiro',
-      action: () => askForMoney(member)
-    },
-    {
+  const actions = [];
+  
+  // Abraçar sempre disponível
+  actions.push({
+    text: '<i class="fas fa-heart"></i> Abraçar',
+    action: () => hugFamily(member)
+  });
+  
+  // Conversar a partir de 2 anos
+  if (canDoAction('conversation')) {
+    actions.push({
       text: '<i class="fas fa-comments"></i> Conversar',
       action: () => chatWithFamily(member)
-    },
-    {
-      text: '<i class="fas fa-heart"></i> Abraçar',
-      action: () => hugFamily(member)
-    }
-  ]);
+    });
+  }
+  
+  // Pedir dinheiro a partir de 3 anos
+  if (canDoAction('askMoney')) {
+    actions.push({
+      text: '<i class="fas fa-money-bill"></i> Pedir Dinheiro',
+      action: () => askForMoney(member)
+    });
+  }
+  
+  showInteractionModal(title, actions);
 }
 
 function askForMoney(member) {
+  if (!canDoAction('askMoney')) {
+    showAgeRestrictionMessage('askMoney');
+    return;
+  }
+  
   closeInteractionModal();
   
   const person = member === 'mother' ? player.parents.mother : player.parents.father;
@@ -842,8 +887,8 @@ function renderRelationshipActions(container) {
 }
 
 function meetNewPerson() {
-  if (player.age < 5) {
-    showToast('Você é muito novo para conhecer pessoas!', 'warning');
+  if (!canDoAction('meetPeople')) {
+    showAgeRestrictionMessage('meetPeople');
     return;
   }
   
@@ -885,7 +930,8 @@ function interactWithPerson(index) {
     }
   ];
   
-  if (player.age >= 10) {
+  // Flertar apenas a partir de 10 anos
+  if (canDoAction('date')) {
     actions.push({
       text: '<i class="fas fa-heart"></i> Flertar',
       action: () => flirtWithPerson(index)
@@ -918,6 +964,11 @@ function talkToPerson(index) {
 }
 
 function flirtWithPerson(index) {
+  if (!canDoAction('date')) {
+    showAgeRestrictionMessage('date');
+    return;
+  }
+  
   closeInteractionModal();
   
   const person = player.relationships[index];
@@ -1102,6 +1153,11 @@ function renderActivityActions(container) {
 }
 
 function doActivity(type, index) {
+  if (!canDoAction('activities')) {
+    showAgeRestrictionMessage('activities');
+    return;
+  }
+  
   const activity = DADOS.atividades[type][index];
   
   if (player.money < activity.custo) {
@@ -1171,8 +1227,8 @@ function renderWorkActions(container) {
       </div>
     `;
   } else {
-    if (player.age < 18) {
-      html += '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">Você precisa ter pelo menos 18 anos para trabalhar.</p>';
+    if (!canDoAction('work')) {
+      html += '<p style="color: var(--text-secondary); text-align: center; padding: 20px;">Você precisa ter pelo menos 14 anos para trabalhar.</p>';
     } else {
       html += '<h4 style="margin-bottom: 10px; color: var(--text-secondary);">Empregos Disponíveis</h4>';
       
@@ -1300,6 +1356,12 @@ function renderShopActions(container) {
 }
 
 function openShop(shopType) {
+  if (!canDoAction('shop')) {
+    closeActionsModal();
+    showAgeRestrictionMessage('shop');
+    return;
+  }
+  
   closeActionsModal();
   
   const modal = document.getElementById('actions-modal');
