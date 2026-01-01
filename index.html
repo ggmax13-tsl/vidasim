@@ -133,70 +133,9 @@
             </div>
         </div>
 
-        <!-- Stats Grid -->
-        <div class="stats-container">
-            <div class="stat-card" data-stat="health">
-                <div class="stat-icon"><i class="fas fa-heart"></i></div>
-                <div class="stat-info">
-                    <span class="stat-label">Saúde</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" id="stat-health"></div>
-                    </div>
-                </div>
-                <span class="stat-value" id="val-health">100</span>
-            </div>
-            
-            <div class="stat-card" data-stat="mood">
-                <div class="stat-icon"><i class="fas fa-smile"></i></div>
-                <div class="stat-info">
-                    <span class="stat-label">Humor</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" id="stat-mood"></div>
-                    </div>
-                </div>
-                <span class="stat-value" id="val-mood">100</span>
-            </div>
-            
-            <div class="stat-card" data-stat="money">
-                <div class="stat-icon"><i class="fas fa-wallet"></i></div>
-                <div class="stat-info">
-                    <span class="stat-label">Dinheiro</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" id="stat-money"></div>
-                    </div>
-                </div>
-                <span class="stat-value" id="val-money">R$ 0</span>
-            </div>
-            
-            <div class="stat-card" data-stat="reputation">
-                <div class="stat-icon"><i class="fas fa-star"></i></div>
-                <div class="stat-info">
-                    <span class="stat-label">Reputação</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" id="stat-reputation"></div>
-                    </div>
-                </div>
-                <span class="stat-value" id="val-reputation">50</span>
-            </div>
-            
-            <div class="stat-card" data-stat="skill">
-                <div class="stat-icon"><i class="fas fa-brain"></i></div>
-                <div class="stat-info">
-                    <span class="stat-label">Habilidade</span>
-                    <div class="stat-bar">
-                        <div class="stat-fill" id="stat-skill"></div>
-                    </div>
-                </div>
-                <span class="stat-value" id="val-skill">20</span>
-            </div>
-            
-            <div class="stat-card" data-stat="age">
-                <div class="stat-icon"><i class="fas fa-birthday-cake"></i></div>
-                <div class="stat-info">
-                    <span class="stat-label">Idade</span>
-                    <div class="stat-number" id="age-display">0</div>
-                </div>
-            </div>
+        <!-- Menu content area (where stats used to be) -->
+        <div class="content-area">
+            <!-- Timeline will be here -->
         </div>
 
         <!-- Timeline (aria-live for accessibility) -->
@@ -209,32 +148,74 @@
             </div>
         </div>
 
-        <!-- Bottom Action Bar -->
-        <div class="bottom-bar">
-            <button class="action-btn" onclick="ageUp()">
-                <i class="fas fa-forward"></i>
-                <span>Envelhecer</span>
-            </button>
-            <button class="action-btn" onclick="showActions('family')">
-                <i class="fas fa-home"></i>
-                <span>Família</span>
-            </button>
-            <button class="action-btn" onclick="showActions('relationships')">
-                <i class="fas fa-users"></i>
-                <span>Pessoas</span>
-            </button>
-            <button class="action-btn" onclick="showActions('activities')">
-                <i class="fas fa-running"></i>
-                <span>Atividades</span>
-            </button>
-            <button class="action-btn" onclick="showActions('work')">
-                <i class="fas fa-briefcase"></i>
-                <span>Trabalho</span>
-            </button>
-            <button class="action-btn" onclick="showActions('shop')">
-                <i class="fas fa-shopping-cart"></i>
-                <span>Lojas</span>
-            </button>
+        <!-- Menu Toggle Button (above stats) -->
+        <button class="menu-toggle-btn" onclick="toggleActionsMenu()" id="menu-toggle">
+            <i class="fas fa-bars"></i>
+            <span>Menu</span>
+        </button>
+
+        <!-- Age Up Button (center, above stats) -->
+        <button class="age-up-btn" onclick="ageUp()" title="Envelhecer">
+            <i class="fas fa-forward"></i>
+            <span>Envelhecer</span>
+        </button>
+
+        <!-- Bottom Stats Bar (Fixed) -->
+        <div class="bottom-stats-bar">
+            <div class="stat-item" data-stat="health" title="Saúde">
+                <i class="fas fa-heart"></i>
+                <span id="bottom-health">100</span>
+            </div>
+            <div class="stat-item" data-stat="mood" title="Humor">
+                <i class="fas fa-smile"></i>
+                <span id="bottom-mood">100</span>
+            </div>
+            <div class="stat-item" data-stat="money" title="Dinheiro">
+                <i class="fas fa-wallet"></i>
+                <span id="bottom-money">R$ 0</span>
+            </div>
+            <div class="stat-item" data-stat="reputation" title="Reputação">
+                <i class="fas fa-star"></i>
+                <span id="bottom-reputation">50</span>
+            </div>
+            <div class="stat-item" data-stat="skill" title="Habilidade">
+                <i class="fas fa-brain"></i>
+                <span id="bottom-skill">20</span>
+            </div>
+            <div class="stat-item" data-stat="age" title="Idade">
+                <i class="fas fa-birthday-cake"></i>
+                <span id="bottom-age">0</span>
+            </div>
+        </div>
+
+        <!-- Collapsible Actions Menu -->
+        <div class="actions-menu" id="actions-menu">
+            <div class="actions-menu-content">
+                <button class="menu-action-btn" onclick="showActions('family'); toggleActionsMenu();">
+                    <i class="fas fa-home"></i>
+                    <span>Família</span>
+                </button>
+                <button class="menu-action-btn" onclick="showActions('relationships'); toggleActionsMenu();">
+                    <i class="fas fa-users"></i>
+                    <span>Pessoas</span>
+                </button>
+                <button class="menu-action-btn" onclick="showActions('activities'); toggleActionsMenu();">
+                    <i class="fas fa-running"></i>
+                    <span>Atividades</span>
+                </button>
+                <button class="menu-action-btn" onclick="showActions('work'); toggleActionsMenu();">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Trabalho</span>
+                </button>
+                <button class="menu-action-btn" onclick="showActions('shop'); toggleActionsMenu();">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Lojas</span>
+                </button>
+                <button class="menu-action-btn" onclick="openPhone(); toggleActionsMenu();">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Celular</span>
+                </button>
+            </div>
         </div>
     </div>
 
@@ -395,6 +376,38 @@
                 <div class="chat-input">
                     <input type="text" id="chat-input-text" placeholder="Digite sua mensagem...">
                     <button onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phone Modal -->
+    <div class="modal" id="phone-modal">
+        <div class="modal-content phone-modal-content">
+            <div class="modal-header phone-header">
+                <h3><i class="fas fa-mobile-alt"></i> Celular</h3>
+                <button class="close-btn" onclick="closePhone()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body phone-body">
+                <div class="phone-apps">
+                    <button class="phone-app-btn" onclick="openChatFromPhone()">
+                        <i class="fas fa-comment"></i>
+                        <span>Mensagens</span>
+                    </button>
+                    <button class="phone-app-btn" onclick="showToast('App em desenvolvimento!', 'info')">
+                        <i class="fas fa-camera"></i>
+                        <span>Câmera</span>
+                    </button>
+                    <button class="phone-app-btn" onclick="showToast('App em desenvolvimento!', 'info')">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Mapas</span>
+                    </button>
+                    <button class="phone-app-btn" onclick="showToast('App em desenvolvimento!', 'info')">
+                        <i class="fas fa-music"></i>
+                        <span>Música</span>
+                    </button>
                 </div>
             </div>
         </div>

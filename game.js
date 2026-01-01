@@ -325,6 +325,9 @@ function updateUI() {
   
   // Age
   document.getElementById('age-display').textContent = player.age;
+  
+  // Update bottom stats bar
+  updateBottomStats();
 }
 
 function updateStat(statName, value, max) {
@@ -1268,18 +1271,55 @@ function applyForJob(index) {
     return;
   }
   
-  const chance = 50 + (player.skill / 2) + (player.reputation / 4);
+  // Calcular chance de contratação baseada em idade, habilidade e reputação
+  let baseChance = 30; // Chance base reduzida de 50% para 30%
   
-  if (Math.random() * 100 < chance) {
+  // Penalidade por idade muito jovem (14-17 anos)
+  if (player.age < 18) {
+    baseChance = 15; // Muito mais difícil para menores de idade
+  } else if (player.age >= 18 && player.age < 25) {
+    baseChance = 35; // Jovens adultos têm chance intermediária
+  } else if (player.age >= 25 && player.age < 50) {
+    baseChance = 45; // Adultos têm melhor chance
+  } else {
+    baseChance = 35; // Idosos têm chance reduzida
+  }
+  
+  // Bônus de habilidade e reputação (mas menos impacto)
+  const skillBonus = (player.skill / 4); // Reduzido de /2 para /4
+  const reputationBonus = (player.reputation / 5); // Reduzido de /4 para /5
+  
+  const finalChance = Math.min(85, baseChance + skillBonus + reputationBonus); // Máximo 85%
+  
+  if (Math.random() * 100 < finalChance) {
+    // Calcular salário realista baseado na idade
+    let salaryMultiplier = 1.0;
+    
+    if (player.age < 18) {
+      salaryMultiplier = 0.3; // Menores ganham 30% do salário base
+    } else if (player.age >= 18 && player.age < 25) {
+      salaryMultiplier = 0.6; // Jovens adultos ganham 60%
+    } else if (player.age >= 25 && player.age < 35) {
+      salaryMultiplier = 0.85; // Adultos jovens ganham 85%
+    } else if (player.age >= 35 && player.age < 50) {
+      salaryMultiplier = 1.0; // Adultos ganham 100%
+    } else {
+      salaryMultiplier = 0.9; // Idosos ganham 90%
+    }
+    
+    // Salário base reduzido (25% do original) e ajustado por idade
+    const realisticSalary = Math.floor((job.salarioBase * 12) * 0.25 * salaryMultiplier);
+    
     player.job = job.nome;
-    player.salary = job.salarioBase * 12;
+    player.salary = realisticSalary;
     player.company = null;
     
     closeActionsModal();
-    addEvent(`Contratado como ${job.nome}!`, 'positive', 'fa-briefcase');
+    addEvent(`Contratado como ${job.nome}! Salário: R$ ${realisticSalary.toLocaleString('pt-BR')}/ano`, 'positive', 'fa-briefcase');
     showToast('Contratado!', 'success');
   } else {
-    showToast('Não foi selecionado desta vez', 'error');
+    showToast('Não foi selecionado desta vez. Continue tentando!', 'error');
+    addEvent(`Não foi aprovado para ${job.nome}`, 'negative', 'fa-times-circle');
   }
   
   updateUI();
@@ -1599,5 +1639,69 @@ window.addEventListener('keydown', (e) => {
     closeResultModal();
     closePhoneModal();
     closeSettings();
+    const menu = document.getElementById('actions-menu');
+    if (menu && menu.classList.contains('active')) {
+      toggleActionsMenu();
+    }
   }
 });
+
+// ===== NEW LAYOUT FUNCTIONS =====
+
+// Format money helper
+function formatMoney(value) {
+  if (value >= 1000000) {
+    return 'R$ ' + (value / 1000000).toFixed(1) + 'M';
+  } else if (value >= 1000) {
+    return 'R$ ' + (value / 1000).toFixed(1) + 'k';
+  }
+  return 'R$ ' + value.toLocaleString('pt-BR');
+}
+
+// Toggle Actions Menu
+function toggleActionsMenu() {
+  const menu = document.getElementById('actions-menu');
+  const toggle = document.getElementById('menu-toggle');
+  
+  if (menu) {
+    menu.classList.toggle('active');
+    
+    if (menu.classList.contains('active')) {
+      toggle.innerHTML = '<i class="fas fa-times"></i><span>Fechar</span>';
+    } else {
+      toggle.innerHTML = '<i class="fas fa-bars"></i><span>Menu</span>';
+    }
+  }
+}
+
+// Update bottom stats bar
+function updateBottomStats() {
+  if (!player) return;
+  
+  document.getElementById('bottom-health').textContent = player.stats.health;
+  document.getElementById('bottom-mood').textContent = player.stats.mood;
+  document.getElementById('bottom-money').textContent = formatMoney(player.stats.money);
+  document.getElementById('bottom-reputation').textContent = player.stats.reputation;
+  document.getElementById('bottom-skill').textContent = player.stats.skill;
+  document.getElementById('bottom-age').textContent = player.age;
+}
+
+// Phone functions
+function openPhone() {
+  if (!checkAge(3, 'Você precisa ter pelo menos 3 anos para usar o celular!')) return;
+  
+  document.getElementById('phone-modal').classList.add('active');
+}
+
+function closePhone() {
+  document.getElementById('phone-modal').classList.remove('active');
+}
+
+function openChatFromPhone() {
+  closePhone();
+  if (player.relationships.length === 0) {
+    showToast('Você ainda não conhece ninguém!', 'info');
+    return;
+  }
+  showActions('relationships');
+}

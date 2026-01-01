@@ -1638,3 +1638,347 @@ body.anim-fast {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent-secondary);
 }
+
+/* ===== NEW LAYOUT: Stats at Bottom, Menu Toggle ===== */
+
+/* Content area (where stats used to be) */
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  padding-bottom: 130px; /* Space for buttons + stats */
+}
+
+/* Age Up Button (Center, above stats) */
+.age-up-btn {
+  position: fixed;
+  bottom: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 140px;
+  height: 60px;
+  border-radius: 30px;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  cursor: pointer;
+  z-index: 100;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.age-up-btn i {
+  font-size: 20px;
+}
+
+.age-up-btn span {
+  font-size: 16px;
+}
+
+.age-up-btn:hover {
+  transform: translateX(-50%) scale(1.08);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+  animation: none;
+}
+
+.age-up-btn:active {
+  transform: translateX(-50%) scale(0.95);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+  50% {
+    box-shadow: 0 4px 25px var(--accent-primary);
+  }
+}
+
+/* Menu Toggle Button (above stats, right side) */
+.menu-toggle-btn {
+  position: fixed;
+  bottom: 70px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 2px solid var(--border-color);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  cursor: pointer;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.menu-toggle-btn span {
+  font-size: 9px;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+.menu-toggle-btn:hover {
+  transform: scale(1.1);
+  background: var(--accent-primary);
+  color: white;
+  border-color: var(--accent-primary);
+}
+
+.menu-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Bottom Stats Bar (Fixed) */
+.bottom-stats-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--bg-secondary);
+  border-top: 2px solid var(--border-color);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 10px;
+  z-index: 99;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-primary);
+  flex: 1;
+  padding: 5px;
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.stat-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.stat-item i {
+  font-size: 18px;
+}
+
+.stat-item[data-stat="health"] i { color: #ff6b6b; }
+.stat-item[data-stat="mood"] i { color: #ffd93d; }
+.stat-item[data-stat="money"] i { color: #6bcf7f; }
+.stat-item[data-stat="reputation"] i { color: #a29bfe; }
+.stat-item[data-stat="skill"] i { color: #74b9ff; }
+.stat-item[data-stat="age"] i { color: #fd79a8; }
+
+.stat-item span {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Collapsible Actions Menu */
+.actions-menu {
+  position: fixed;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  background: var(--bg-secondary);
+  border-top: 2px solid var(--border-color);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
+  z-index: 98;
+}
+
+.actions-menu.active {
+  max-height: 400px;
+  opacity: 1;
+}
+
+.actions-menu-content {
+  padding: 15px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.menu-action-btn {
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.menu-action-btn i {
+  font-size: 24px;
+  color: var(--accent-primary);
+}
+
+.menu-action-btn:hover {
+  background: var(--accent-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.menu-action-btn:hover i {
+  color: white;
+}
+
+.menu-action-btn:active {
+  transform: scale(0.95);
+}
+
+/* Phone Modal */
+.phone-modal-content {
+  max-width: 400px;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.phone-header {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white;
+  border-radius: 0;
+}
+
+.phone-body {
+  background: var(--bg-primary);
+  padding: 20px;
+  min-height: 400px;
+}
+
+.phone-apps {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.phone-app-btn {
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-color);
+  border-radius: 20px;
+  padding: 30px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: var(--text-primary);
+}
+
+.phone-app-btn i {
+  font-size: 36px;
+  color: var(--accent-primary);
+}
+
+.phone-app-btn span {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.phone-app-btn:hover {
+  background: var(--accent-primary);
+  color: white;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.phone-app-btn:hover i {
+  color: white;
+}
+
+.phone-app-btn:active {
+  transform: translateY(-2px) scale(0.95);
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .content-area {
+    padding-bottom: 120px;
+  }
+  
+  .age-up-btn {
+    bottom: 65px;
+    min-width: 130px;
+    height: 55px;
+    font-size: 14px;
+  }
+  
+  .age-up-btn i {
+    font-size: 18px;
+  }
+  
+  .age-up-btn span {
+    font-size: 14px;
+  }
+  
+  .bottom-stats-bar {
+    height: 55px;
+  }
+  
+  .stat-item {
+    font-size: 10px;
+  }
+  
+  .stat-item i {
+    font-size: 16px;
+  }
+  
+  .menu-toggle-btn {
+    bottom: 65px;
+    right: 15px;
+    width: 55px;
+    height: 55px;
+    font-size: 18px;
+  }
+  
+  .menu-toggle-btn span {
+    font-size: 8px;
+  }
+  
+  .actions-menu-content {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 10px;
+  }
+  
+  .menu-action-btn {
+    padding: 12px;
+    font-size: 12px;
+  }
+  
+  .menu-action-btn i {
+    font-size: 20px;
+  }
+}
