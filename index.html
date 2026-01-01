@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VidaSim - Life Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="splash-screen">
+        <div class="splash-content">
+            <h1 class="splash-title">VidaSim</h1>
+            <p class="splash-subtitle">Your Life, Your Choices</p>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="app" class="app hidden">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="app-title">VidaSim</h1>
+            <button id="settings-btn" class="icon-btn" aria-label="Settings">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M12 1v6m0 6v6m5.2-14.8l-4.2 4.2m0 6l4.2 4.2m5.6-11.4l-6 0m-6 0l-6 0m14.8 5.2l-4.2-4.2m0-6l-4.2-4.2"></path>
+                </svg>
+            </button>
+        </header>
+
+        <!-- Attributes Panel -->
+        <div class="attributes-panel">
+            <div class="attribute-row">
+                <div class="attribute-item">
+                    <span class="attribute-label">Age</span>
+                    <span id="age-value" class="attribute-value">18</span>
+                </div>
+                <div class="attribute-item">
+                    <span class="attribute-label">Money</span>
+                    <span id="money-value" class="attribute-value">$1,000</span>
+                </div>
+            </div>
+            
+            <div class="attribute-bar-container">
+                <div class="attribute-bar-item">
+                    <label class="bar-label">Health</label>
+                    <div class="progress-bar">
+                        <div id="health-bar" class="progress-fill health" style="width: 100%"></div>
+                    </div>
+                    <span id="health-value" class="bar-value">100</span>
+                </div>
+                
+                <div class="attribute-bar-item">
+                    <label class="bar-label">Mood</label>
+                    <div class="progress-bar">
+                        <div id="mood-bar" class="progress-fill mood" style="width: 100%"></div>
+                    </div>
+                    <span id="mood-value" class="bar-value">100</span>
+                </div>
+                
+                <div class="attribute-bar-item">
+                    <label class="bar-label">Reputation</label>
+                    <div class="progress-bar">
+                        <div id="reputation-bar" class="progress-fill reputation" style="width: 50%"></div>
+                    </div>
+                    <span id="reputation-value" class="bar-value">50</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Container -->
+        <div id="timeline" class="timeline" role="feed" aria-live="polite" aria-atomic="false">
+            <div class="timeline-empty">
+                <p>Your life story begins here...</p>
+                <p class="timeline-hint">Tap "Next Year" to continue</p>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="bottom-bar">
+            <button id="next-year-btn" class="btn btn-primary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"></path>
+                </svg>
+                Next Year
+            </button>
+            <button id="shop-btn" class="btn btn-secondary">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.3 9.4a1 1 0 0 0 1 1.2h15.6a1 1 0 0 0 1-1.2L17 13M10 21a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm7 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"></path>
+                </svg>
+                Shop
+            </button>
+            <button id="reset-btn" class="btn btn-danger">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+                    <path d="M21 3v5h-5"></path>
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+                    <path d="M3 21v-5h5"></path>
+                </svg>
+                Reset
+            </button>
+        </nav>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button id="close-settings-btn" class="icon-btn" aria-label="Close settings">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="setting-item">
+                    <label for="theme-select">Theme</label>
+                    <select id="theme-select" class="setting-select">
+                        <option value="light">Light</option>
+                        <option value="dark">Dark</option>
+                    </select>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="event-density-select">Event Density</label>
+                    <select id="event-density-select" class="setting-select">
+                        <option value="low">Low (1-2 events/year)</option>
+                        <option value="medium" selected>Medium (2-3 events/year)</option>
+                        <option value="high">High (3-5 events/year)</option>
+                    </select>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="animation-speed-select">Animation Speed</label>
+                    <select id="animation-speed-select" class="setting-select">
+                        <option value="slow">Slow</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="fast">Fast</option>
+                    </select>
+                </div>
+                
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="advanced-mode-toggle" class="setting-checkbox">
+                        Advanced Mode
+                    </label>
+                    <p class="setting-description">Show detailed statistics and more options</p>
+                </div>
+                
+                <div class="setting-item">
+                    <label for="language-select">Language</label>
+                    <select id="language-select" class="setting-select" disabled>
+                        <option value="en">English (Coming Soon)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Shop Modal -->
+    <div id="shop-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Shop</h2>
+                <button id="close-shop-btn" class="icon-btn" aria-label="Close shop">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div id="shop-categories" class="shop-categories">
+                    <button class="category-btn active" data-category="cars">Cars</button>
+                    <button class="category-btn" data-category="phones">Phones</button>
+                </div>
+                
+                <div id="shop-items" class="shop-items">
+                    <!-- Shop items will be dynamically populated -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="dados.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
