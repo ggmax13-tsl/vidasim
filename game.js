@@ -673,6 +673,10 @@ function showActions(category) {
   const modal = document.getElementById('actions-modal');
   const title = document.getElementById('actions-title');
   const body = document.getElementById('actions-body');
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  
+  // Hide age up button when modal opens
+  if (ageUpBtn) ageUpBtn.style.display = 'none';
   
   modal.classList.add('active');
   
@@ -701,6 +705,11 @@ function showActions(category) {
 }
 
 function closeActionsModal() {
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  
+  // Show age up button when modal closes
+  if (ageUpBtn) ageUpBtn.style.display = 'block';
+  
   document.getElementById('actions-modal').classList.remove('active');
 }
 
@@ -1569,6 +1578,11 @@ function showInteractionModal(title, actions) {
 }
 
 function closeInteractionModal() {
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  
+  // Show age up button when modal closes
+  if (ageUpBtn) ageUpBtn.style.display = 'block';
+  
   document.getElementById('interaction-modal').classList.remove('active');
 }
 
@@ -1579,6 +1593,10 @@ function showResult(type, title, text, stats) {
   const titleEl = document.getElementById('result-title');
   const textEl = document.getElementById('result-text');
   const statsEl = document.getElementById('result-stats');
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  
+  // Hide age up button when modal opens
+  if (ageUpBtn) ageUpBtn.style.display = 'none';
   
   icon.className = 'result-icon ' + type;
   icon.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check' : 'fa-times'}"></i>`;
@@ -1600,6 +1618,11 @@ function showResult(type, title, text, stats) {
 }
 
 function closeResultModal() {
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  
+  // Show age up button when modal closes
+  if (ageUpBtn) ageUpBtn.style.display = 'block';
+  
   document.getElementById('result-modal').classList.remove('active');
 }
 
@@ -1662,14 +1685,19 @@ function formatMoney(value) {
 function toggleActionsMenu() {
   const menu = document.getElementById('actions-menu');
   const toggle = document.getElementById('menu-toggle');
+  const ageUpBtn = document.querySelector('.age-up-btn');
   
   if (menu) {
     menu.classList.toggle('active');
     
     if (menu.classList.contains('active')) {
       toggle.innerHTML = '<i class="fas fa-times"></i><span>Fechar</span>';
+      // Hide age up button when menu is open
+      if (ageUpBtn) ageUpBtn.style.display = 'none';
     } else {
       toggle.innerHTML = '<i class="fas fa-bars"></i><span>Menu</span>';
+      // Show age up button when menu is closed
+      if (ageUpBtn) ageUpBtn.style.display = 'block';
     }
   }
 }
@@ -1690,10 +1718,18 @@ function updateBottomStats() {
 function openPhone() {
   if (!checkAge(3, 'Você precisa ter pelo menos 3 anos para usar o celular!')) return;
   
+  // Hide age up button when opening phone
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'none';
+  
   document.getElementById('phone-modal').classList.add('active');
 }
 
 function closePhone() {
+  // Show age up button when closing phone
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'block';
+  
   document.getElementById('phone-modal').classList.remove('active');
 }
 
