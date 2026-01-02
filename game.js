@@ -497,6 +497,9 @@ function applyEventEffects(event) {
     });
   }
   
+  // Update bottom stats whenever stats change
+  updateBottomStats();
+  
   return effects;
 }
 
@@ -1020,7 +1023,11 @@ function openPhoneChat(index) {
   const person = player.relationships[index];
   currentChatPerson = index;
   
-  const modal = document.getElementById('phone-modal');
+  // Hide age up button
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'none';
+  
+  const modal = document.getElementById('chat-modal');
   const contactName = document.getElementById('phone-contact');
   const messagesContainer = document.getElementById('chat-messages');
   
@@ -1042,7 +1049,11 @@ function openPhoneChat(index) {
 }
 
 function closePhoneModal() {
-  document.getElementById('phone-modal').classList.remove('active');
+  // Show age up button
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'block';
+  
+  document.getElementById('chat-modal').classList.remove('active');
   currentChatPerson = null;
 }
 
