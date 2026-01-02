@@ -564,6 +564,140 @@ function ageUp() {
   saveGame();
   
   showToast(`Você fez ${player.age} anos!`, 'success');
+  
+  // Check for choice events
+  checkChoiceEvents();
+}
+
+// === CHOICE EVENTS SYSTEM ===
+function checkChoiceEvents() {
+  // Only trigger choice events sometimes (30% chance)
+  if (Math.random() > 0.3) return;
+  
+  // Find eligible events for current age
+  const eligibleEvents = DADOS.eventosEscolha.filter(e => 
+    e.idade <= player.age && 
+    (!e.maxIdade || e.idade <= e.maxIdade) &&
+    (!player.choiceEventsPlayed || !player.choiceEventsPlayed.includes(e.id))
+  );
+  
+  if (eligibleEvents.length === 0) return;
+  
+  // Pick a random eligible event
+  const event = eligibleEvents[Math.floor(Math.random() * eligibleEvents.length)];
+  
+  // Mark as played (don't repeat same event)
+  if (!player.choiceEventsPlayed) {
+    player.choiceEventsPlayed = [];
+  }
+  player.choiceEventsPlayed.push(event.id);
+  
+  // Show choice event modal
+  showChoiceEvent(event);
+}
+
+function showChoiceEvent(event) {
+  // Hide age up button
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'none';
+  
+  // Set event content
+  document.getElementById('choice-event-icon').innerHTML = `<i class="fas ${event.icone}"></i>`;
+  document.getElementById('choice-event-title').textContent = 'Decisão Importante';
+  document.getElementById('choice-event-text').textContent = event.texto;
+  
+  // Create option buttons
+  const optionsContainer = document.getElementById('choice-options');
+  optionsContainer.innerHTML = '';
+  
+  event.opcoes.forEach((opcao, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-option-btn';
+    btn.textContent = opcao.texto;
+    btn.onclick = () => handleChoiceSelection(event, opcao);
+    optionsContainer.appendChild(btn);
+  });
+  
+  document.getElementById('choice-event-modal').classList.add('active');
+}
+
+function handleChoiceSelection(event, opcao) {
+  // Check for chance-based outcomes
+  if (opcao.chance && Math.random() > opcao.chance) {
+    // Failed the chance check - show failure message
+    const failureResult = opcao.failureResultado || 'Infelizmente, não deu certo dessa vez...';
+    const failureConsequences = opcao.failureConsequencias || {mood: -10};
+    
+    showChoiceResult(event.icone, 'Que pena!', failureResult, failureConsequences);
+  } else {
+    // Success - show normal result
+    showChoiceResult(event.icone, 'Resultado', opcao.resultado, opcao.consequencias);
+  }
+  
+  // Close choice modal
+  document.getElementById('choice-event-modal').classList.remove('active');
+}
+
+function showChoiceResult(icon, title, text, consequences) {
+  // Apply consequences
+  const effects = [];
+  
+  if (consequences.health) {
+    player.health = clamp(player.health + consequences.health, 0, 100);
+    effects.push({
+      text: (consequences.health > 0 ? '+' : '') + consequences.health + ' Saúde',
+      type: consequences.health > 0 ? 'positive' : 'negative'
+    });
+  }
+  
+  if (consequences.mood) {
+    player.mood = clamp(player.mood + consequences.mood, 0, 100);
+    effects.push({
+      text: (consequences.mood > 0 ? '+' : '') + consequences.mood + ' Humor',
+      type: consequences.mood > 0 ? 'positive' : 'negative'
+    });
+  }
+  
+  if (consequences.money) {
+    player.money = Math.max(0, player.money + consequences.money);
+    effects.push({
+      text: (consequences.money > 0 ? '+' : '') + 'R$ ' + Math.abs(consequences.money).toLocaleString('pt-BR'),
+      type: consequences.money > 0 ? 'positive' : 'negative'
+    });
+  }
+  
+  if (consequences.reputation) {
+    player.reputation = clamp(player.reputation + consequences.reputation, 0, 100);
+    effects.push({
+      text: (consequences.reputation > 0 ? '+' : '') + consequences.reputation + ' Reputação',
+      type: consequences.reputation > 0 ? 'positive' : 'negative'
+    });
+  }
+  
+  if (consequences.skill) {
+    player.skill = clamp(player.skill + consequences.skill, 0, 100);
+    effects.push({
+      text: (consequences.skill > 0 ? '+' : '') + consequences.skill + ' Habilidade',
+      type: consequences.skill > 0 ? 'positive' : 'negative'
+    });
+  }
+  
+  // Update UI
+  updateBottomStats();
+  updateUI();
+  saveGame();
+  
+  // Show result modal
+  showModal(
+    title,
+    icon,
+    `<p style="margin-bottom: 16px; line-height: 1.6;">${text}</p>` +
+    effects.map(e => `<span class="effect ${e.type}">${e.text}</span>`).join(' ')
+  );
+  
+  // Show age up button again
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'block';
 }
 
 function die(cause) {

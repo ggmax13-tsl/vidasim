@@ -242,6 +242,272 @@ const DADOS = {
     { nome: 'Vale', setor: 'Mineração', vagas: ['Engenheiro Minas', 'Operador Equipamento', 'Analista Ambiental'] }
   ],
 
+  // === CHOICE EVENTS ===
+  // Events with 2-4 choice options and consequences
+  eventosEscolha: [
+    // Career choices
+    {
+      id: 'job_offer',
+      idade: 18,
+      texto: 'Você recebeu uma oferta de emprego, mas o salário é baixo e o trabalho parece entediante. O que você faz?',
+      icone: 'fa-briefcase',
+      opcoes: [
+        {
+          texto: 'Aceitar o emprego',
+          consequencias: { money: 2000, mood: -10, skill: 5 },
+          resultado: 'Você aceitou o emprego. O salário ajuda, mas o trabalho é monótono.'
+        },
+        {
+          texto: 'Recusar e procurar algo melhor',
+          consequencias: { mood: 5, skill: 10 },
+          resultado: 'Você recusou e continuou procurando. Sua autoestima melhorou!'
+        },
+        {
+          texto: 'Negociar um salário maior',
+          consequencias: { money: 3500, reputation: 10, skill: 5 },
+          resultado: 'Você negociou e conseguiu um salário 75% maior! Boa negociação.',
+          chance: 0.5
+        }
+      ]
+    },
+    {
+      id: 'study_choice',
+      idade: 15,
+      texto: 'Você tem uma prova importante amanhã. O que você vai fazer?',
+      icone: 'fa-book',
+      opcoes: [
+        {
+          texto: 'Estudar a noite toda',
+          consequencias: { skill: 15, health: -10, mood: -5 },
+          resultado: 'Você estudou muito e tirou nota alta, mas está exausto!'
+        },
+        {
+          texto: 'Estudar algumas horas e dormir',
+          consequencias: { skill: 10, health: 5 },
+          resultado: 'Você fez um bom equilíbrio! Dormiu bem e ainda foi bem na prova.'
+        },
+        {
+          texto: 'Não estudar e sair com amigos',
+          consequencias: { mood: 20, skill: -10, reputation: -5 },
+          resultado: 'Você se divertiu muito, mas foi mal na prova...'
+        }
+      ]
+    },
+    {
+      id: 'bully',
+      idade: 12,
+      texto: 'Um colega está sendo intimidado na escola. Como você reage?',
+      icone: 'fa-hand-paper',
+      opcoes: [
+        {
+          texto: 'Defender o colega',
+          consequencias: { reputation: 20, mood: 10, health: -5 },
+          resultado: 'Você defendeu seu colega! Todos te admiram, mas levou uns empurrões.'
+        },
+        {
+          texto: 'Chamar um professor',
+          consequencias: { reputation: 10, mood: 5 },
+          resultado: 'Você chamou um adulto. O bullying parou e todos ficaram seguros.'
+        },
+        {
+          texto: 'Ignorar a situação',
+          consequencias: { mood: -15, reputation: -10 },
+          resultado: 'Você ignorou... Não se sente bem com isso.'
+        },
+        {
+          texto: 'Conversar com o agressor',
+          consequencias: { reputation: 15, skill: 10 },
+          resultado: 'Você conversou com calma. O agressor entendeu e parou!',
+          chance: 0.6
+        }
+      ]
+    },
+    {
+      id: 'money_found',
+      idade: 10,
+      texto: 'Você encontrou uma carteira com R$ 500 na rua. O que você faz?',
+      icone: 'fa-wallet',
+      opcoes: [
+        {
+          texto: 'Ficar com o dinheiro',
+          consequencias: { money: 500, mood: -10, reputation: -15 },
+          resultado: 'Você ficou com o dinheiro, mas se sente culpado...'
+        },
+        {
+          texto: 'Devolver ao dono',
+          consequencias: { reputation: 25, mood: 20, money: 100 },
+          resultado: 'Você devolveu! O dono te deu uma recompensa e ficou muito grato.'
+        },
+        {
+          texto: 'Levar para a polícia',
+          consequencias: { reputation: 20, mood: 15 },
+          resultado: 'Você levou para a polícia. Fez a coisa certa!'
+        }
+      ]
+    },
+    {
+      id: 'sick_parent',
+      idade: 14,
+      texto: 'Seu pai/mãe está doente e precisa ir ao hospital, mas você tem uma festa importante. O que você faz?',
+      icone: 'fa-hospital',
+      opcoes: [
+        {
+          texto: 'Ir para a festa',
+          consequencias: { mood: 15, reputation: -20 },
+          resultado: 'Você foi para a festa, mas sua família ficou decepcionada.'
+        },
+        {
+          texto: 'Ficar e ajudar',
+          consequencias: { reputation: 15, mood: -5, skill: 5 },
+          resultado: 'Você ficou e ajudou. Sua família está orgulhosa de você!'
+        },
+        {
+          texto: 'Ir rápido ao hospital e depois à festa',
+          consequencias: { mood: 10, reputation: 10 },
+          resultado: 'Você conseguiu fazer os dois! Equilíbrio perfeito.',
+          chance: 0.7
+        }
+      ]
+    },
+    {
+      id: 'love_triangle',
+      idade: 16,
+      texto: 'Duas pessoas te convidaram para sair no mesmo dia. Como você resolve isso?',
+      icone: 'fa-heart',
+      opcoes: [
+        {
+          texto: 'Sair com a primeira pessoa',
+          consequencias: { mood: 15, reputation: 5 },
+          resultado: 'Você saiu com quem te chamou primeiro. Foi uma noite legal!'
+        },
+        {
+          texto: 'Sair com a segunda pessoa',
+          consequencias: { mood: 15, reputation: -5 },
+          resultado: 'Você saiu com a segunda pessoa, mas a primeira ficou chateada.'
+        },
+        {
+          texto: 'Ser honesto e reagendar',
+          consequencias: { reputation: 15, mood: 5, skill: 10 },
+          resultado: 'Você foi honesto! Todos respeitaram sua sinceridade.'
+        },
+        {
+          texto: 'Marcar um encontro triplo',
+          consequencias: { mood: -10, reputation: -15 },
+          resultado: 'Foi muito constrangedor... Ninguém curtiu a ideia.'
+        }
+      ]
+    },
+    {
+      id: 'pet_choice',
+      idade: 8,
+      texto: 'Seus pais deixaram você escolher um animal de estimação! Qual você quer?',
+      icone: 'fa-paw',
+      opcoes: [
+        {
+          texto: 'Cachorro',
+          consequencias: { mood: 25, health: 10 },
+          resultado: 'Você ganhou um cachorro! Melhor amigo para sempre! 🐕'
+        },
+        {
+          texto: 'Gato',
+          consequencias: { mood: 20, health: 5 },
+          resultado: 'Você ganhou um gato! Companheiro fofo e independente! 🐱'
+        },
+        {
+          texto: 'Hamster',
+          consequencias: { mood: 15, skill: 5 },
+          resultado: 'Você ganhou um hamster! Pequeno e adorável! 🐹'
+        },
+        {
+          texto: 'Peixe',
+          consequencias: { mood: 10, health: 5, skill: 5 },
+          resultado: 'Você ganhou um aquário! Relaxante e bonito! 🐠'
+        }
+      ]
+    },
+    {
+      id: 'diet_choice',
+      idade: 20,
+      texto: 'Você quer melhorar sua saúde. Qual dieta você vai seguir?',
+      icone: 'fa-apple-alt',
+      opcoes: [
+        {
+          texto: 'Dieta balanceada',
+          consequencias: { health: 20, mood: 10, money: -500 },
+          resultado: 'Você seguiu uma dieta balanceada! Saúde e energia melhoraram.'
+        },
+        {
+          texto: 'Dieta radical',
+          consequencias: { health: 10, mood: -15, money: -800 },
+          resultado: 'A dieta foi muito restritiva... Você perdeu peso mas está cansado.'
+        },
+        {
+          texto: 'Só exercícios',
+          consequencias: { health: 25, skill: 5, money: -200 },
+          resultado: 'Você focou em exercícios! Está em ótima forma!'
+        },
+        {
+          texto: 'Não fazer nada',
+          consequencias: { mood: 5, health: -5 },
+          resultado: 'Você não mudou nada... Tudo continua igual.'
+        }
+      ]
+    },
+    {
+      id: 'investment',
+      idade: 25,
+      texto: 'Você tem R$ 5.000 guardados. Onde você vai investir?',
+      icone: 'fa-chart-line',
+      opcoes: [
+        {
+          texto: 'Bolsa de valores',
+          consequencias: { money: 3000, skill: 10 },
+          resultado: 'Você investiu na bolsa e teve lucro! Mas foi arriscado.',
+          chance: 0.6
+        },
+        {
+          texto: 'Poupança',
+          consequencias: { money: 500, mood: 5 },
+          resultado: 'Você colocou na poupança. Seguro, mas rendimento baixo.'
+        },
+        {
+          texto: 'Curso profissionalizante',
+          consequencias: { skill: 30, reputation: 10, money: -3000 },
+          resultado: 'Você investiu em si mesmo! Suas habilidades aumentaram muito.'
+        },
+        {
+          texto: 'Viagem',
+          consequencias: { mood: 40, health: 10, money: -5000 },
+          resultado: 'Você viajou e viveu experiências incríveis! Valeu cada centavo.'
+        }
+      ]
+    },
+    {
+      id: 'fight',
+      idade: 17,
+      texto: 'Alguém está te provocando e quer brigar. O que você faz?',
+      icone: 'fa-fist-raised',
+      opcoes: [
+        {
+          texto: 'Brigar',
+          consequencias: { reputation: -20, health: -15, mood: -10 },
+          resultado: 'Você brigou e se machucou. Todos perderam.'
+        },
+        {
+          texto: 'Ignorar e ir embora',
+          consequencias: { mood: -5, reputation: 5, skill: 5 },
+          resultado: 'Você foi maduro e se afastou. Escolha sábia!'
+        },
+        {
+          texto: 'Conversar e resolver',
+          consequencias: { reputation: 15, skill: 10, mood: 10 },
+          resultado: 'Você conversou e resolveu pacificamente. Todos te respeitam!',
+          chance: 0.5
+        }
+      ]
+    }
+  ],
+
   profissoes: [
     { nome: 'Desenvolvedor Web', salarioBase: 8000, requisitos: { skill: 40 }, setor: 'Tecnologia' },
     { nome: 'Designer Gráfico', salarioBase: 5000, requisitos: { skill: 30 }, setor: 'Criativo' },

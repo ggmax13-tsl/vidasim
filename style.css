@@ -2392,3 +2392,136 @@ body.anim-fast {
   line-height: 1.6;
   font-size: 14px;
 }
+
+/* === CHOICE EVENT MODAL === */
+.choice-event-content {
+  max-width: 500px;
+  width: 92%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.choice-event-header {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  color: white;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.choice-event-icon {
+  width: 80px;
+  height: 80px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.choice-event-icon i {
+  font-size: 40px;
+  color: white;
+}
+
+.choice-event-header h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.choice-event-body {
+  padding: 24px;
+}
+
+.choice-event-body p {
+  color: var(--text-primary);
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.choice-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.choice-option-btn {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 18px 20px;
+  border-radius: var(--border-radius);
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 15px;
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.choice-option-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: var(--accent-primary);
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+}
+
+.choice-option-btn:hover {
+  transform: translateX(4px);
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.choice-option-btn:hover::before {
+  transform: scaleY(1);
+}
+
+.choice-option-btn:active {
+  transform: translateX(2px);
+  transition: transform 0.1s ease;
+}
+
+[data-theme="dark"] .choice-option-btn {
+  background: var(--bg-tertiary);
+}
+
+@media (max-width: 480px) {
+  .choice-event-content {
+    width: 96%;
+  }
+  
+  .choice-event-header {
+    padding: 24px 16px;
+  }
+  
+  .choice-event-icon {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .choice-event-icon i {
+    font-size: 32px;
+  }
+  
+  .choice-event-body {
+    padding: 20px 16px;
+  }
+  
+  .choice-event-body p {
+    font-size: 15px;
+  }
+  
+  .choice-option-btn {
+    padding: 16px 18px;
+    font-size: 14px;
+  }
+}
