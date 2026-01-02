@@ -1752,3 +1752,310 @@ function openChatFromPhone() {
   }
   showActions('relationships');
 }
+
+// === PHONE APPS ===
+
+// Bank App
+function openBankApp() {
+  if (!checkAge(16, 'Você precisa ter pelo menos 16 anos para usar o banco!')) {
+    return;
+  }
+  
+  closePhone();
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'none';
+  
+  // Update balance display
+  document.getElementById('bank-balance').textContent = `R$ ${formatNumber(player.money)}`;
+  
+  document.getElementById('bank-modal').classList.add('active');
+}
+
+function closeBankApp() {
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'block';
+  
+  document.getElementById('bank-modal').classList.remove('active');
+}
+
+function showTransferModal() {
+  showToast('Recurso de transferência em desenvolvimento!', 'info');
+}
+
+function showInvestmentInfo() {
+  showToast('Sistema de investimentos será implementado em breve!', 'info');
+}
+
+function showBankHistory() {
+  showToast('Extrato bancário em desenvolvimento!', 'info');
+}
+
+// Social Media App
+function openSocialApp() {
+  if (!checkAge(13, 'Você precisa ter pelo menos 13 anos para usar redes sociais!')) {
+    return;
+  }
+  
+  closePhone();
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'none';
+  
+  // Initialize social stats if they don't exist
+  if (!player.socialStats) {
+    player.socialStats = {
+      followers: Math.floor(10 + Math.random() * 50),
+      likes: Math.floor(5 + Math.random() * 20),
+      posts: []
+    };
+  }
+  
+  // Update stats display
+  document.getElementById('social-followers').textContent = player.socialStats.followers;
+  document.getElementById('social-likes').textContent = player.socialStats.likes;
+  
+  // Update feed
+  updateSocialFeed();
+  
+  document.getElementById('social-modal').classList.add('active');
+}
+
+function closeSocialApp() {
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'block';
+  
+  document.getElementById('social-modal').classList.remove('active');
+}
+
+function makePost() {
+  const postText = document.getElementById('social-post-text').value.trim();
+  
+  if (!postText) {
+    showToast('Digite algo para postar!', 'warning');
+    return;
+  }
+  
+  if (postText.length < 3) {
+    showToast('A postagem precisa ter pelo menos 3 caracteres!', 'warning');
+    return;
+  }
+  
+  // Add post
+  const newLikes = Math.floor(player.socialStats.followers * (0.1 + Math.random() * 0.4));
+  const newFollowers = Math.floor(Math.random() * 5);
+  
+  player.socialStats.posts.unshift({
+    text: postText,
+    likes: newLikes,
+    timestamp: Date.now()
+  });
+  
+  player.socialStats.likes += newLikes;
+  player.socialStats.followers += newFollowers;
+  
+  // Update stats
+  updatePlayerStats({mood: 5, reputation: 2});
+  
+  // Clear textarea
+  document.getElementById('social-post-text').value = '';
+  
+  // Update display
+  document.getElementById('social-followers').textContent = player.socialStats.followers;
+  document.getElementById('social-likes').textContent = player.socialStats.likes;
+  
+  updateSocialFeed();
+  
+  showToast(`Postado! +${newLikes} curtidas, +${newFollowers} seguidores!`, 'success');
+}
+
+function updateSocialFeed() {
+  const feed = document.getElementById('social-feed');
+  
+  if (!player.socialStats || player.socialStats.posts.length === 0) {
+    feed.innerHTML = '<h4>Suas Postagens</h4><p class="no-posts">Você ainda não fez nenhuma postagem.</p>';
+    return;
+  }
+  
+  let html = '<h4>Suas Postagens</h4>';
+  
+  player.socialStats.posts.slice(0, 5).forEach(post => {
+    const date = new Date(post.timestamp);
+    const timeAgo = getTimeAgo(date);
+    
+    html += `
+      <div class="social-post">
+        <div class="social-post-header">
+          <span>${player.name}</span>
+          <span>${timeAgo}</span>
+        </div>
+        <div class="social-post-text">${post.text}</div>
+        <div class="social-post-stats">
+          <span><i class="fas fa-heart"></i> ${post.likes}</span>
+        </div>
+      </div>
+    `;
+  });
+  
+  feed.innerHTML = html;
+}
+
+function getTimeAgo(date) {
+  const now = Date.now();
+  const diff = now - date.getTime();
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+  
+  if (days > 0) return `${days}d atrás`;
+  if (hours > 0) return `${hours}h atrás`;
+  if (minutes > 0) return `${minutes}min atrás`;
+  return 'Agora';
+}
+
+// Music App
+function openMusicApp() {
+  if (!checkAge(5, 'Você precisa ter pelo menos 5 anos para ouvir música!')) {
+    return;
+  }
+  
+  closePhone();
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'none';
+  
+  document.getElementById('music-modal').classList.add('active');
+}
+
+function closeMusicApp() {
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'block';
+  
+  document.getElementById('music-modal').classList.remove('active');
+}
+
+function playPlaylist(type) {
+  let song = '';
+  let bonus = {};
+  
+  switch (type) {
+    case 'alegre':
+      song = 'Tocando música alegre... 🎵';
+      bonus = {mood: 15};
+      break;
+    case 'relaxante':
+      song = 'Tocando música relaxante... 🧘';
+      bonus = {health: 10};
+      break;
+    case 'foco':
+      song = 'Tocando música para foco... 🎯';
+      bonus = {skill: 10};
+      break;
+  }
+  
+  document.getElementById('now-playing').innerHTML = `
+    <i class="fas fa-music"></i>
+    <span>${song}</span>
+  `;
+  
+  updatePlayerStats(bonus);
+  showToast('Ouvindo música...', 'success');
+}
+
+// Browser App
+function openBrowserApp() {
+  if (!checkAge(10, 'Você precisa ter pelo menos 10 anos para usar o navegador!')) {
+    return;
+  }
+  
+  closePhone();
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'none';
+  
+  // Reset search
+  document.getElementById('browser-search-input').value = '';
+  document.getElementById('browser-results').innerHTML = `
+    <div class="browser-home">
+      <i class="fas fa-globe"></i>
+      <p>Digite algo para pesquisar</p>
+    </div>
+  `;
+  
+  document.getElementById('browser-modal').classList.add('active');
+}
+
+function closeBrowserApp() {
+  const ageUpBtn = document.querySelector('.age-up-btn');
+  if (ageUpBtn) ageUpBtn.style.display = 'block';
+  
+  document.getElementById('browser-modal').classList.remove('active');
+}
+
+function browserSearch() {
+  const query = document.getElementById('browser-search-input').value.trim().toLowerCase();
+  const results = document.getElementById('browser-results');
+  
+  if (!query) {
+    showToast('Digite algo para pesquisar!', 'warning');
+    return;
+  }
+  
+  // Simulate search with predefined results
+  const searchResults = [
+    {
+      keywords: ['emprego', 'trabalho', 'carreira', 'profissão'],
+      title: 'Como encontrar um emprego',
+      text: 'Dicas para conseguir seu primeiro emprego: mantenha suas habilidades em alta, cuide da sua reputação e tente frequentemente!'
+    },
+    {
+      keywords: ['dinheiro', 'grana', 'rico', 'ganhar'],
+      title: 'Como ganhar dinheiro',
+      text: 'Formas de ganhar dinheiro: trabalhe, invista, cuide das suas finanças e evite gastos desnecessários!'
+    },
+    {
+      keywords: ['saúde', 'bem-estar', 'exercício', 'fitness'],
+      title: 'Dicas de saúde',
+      text: 'Mantenha-se saudável: faça exercícios regularmente, coma bem, durma o suficiente e visite o médico periodicamente!'
+    },
+    {
+      keywords: ['feliz', 'felicidade', 'humor', 'alegria'],
+      title: 'Como ser mais feliz',
+      text: 'Aumente sua felicidade: passe tempo com amigos e família, faça atividades que gosta, ouça música e cuide de si mesmo!'
+    },
+    {
+      keywords: ['amigos', 'conhecer', 'pessoas', 'social'],
+      title: 'Como fazer amigos',
+      text: 'Faça novos amigos: seja gentil, converse com pessoas, participe de atividades e mantenha bons relacionamentos!'
+    },
+    {
+      keywords: ['estudar', 'escola', 'educação', 'aprender'],
+      title: 'Importância dos estudos',
+      text: 'Estudar é importante! Uma boa educação abre portas para melhores empregos e oportunidades na vida.'
+    }
+  ];
+  
+  // Find matching results
+  const matches = searchResults.filter(result => 
+    result.keywords.some(keyword => query.includes(keyword))
+  );
+  
+  if (matches.length === 0) {
+    results.innerHTML = `
+      <div class="browser-home">
+        <i class="fas fa-search"></i>
+        <p>Nenhum resultado encontrado para "${query}"</p>
+      </div>
+    `;
+  } else {
+    let html = '';
+    matches.forEach(result => {
+      html += `
+        <div class="browser-result">
+          <div class="browser-result-title">${result.title}</div>
+          <div class="browser-result-text">${result.text}</div>
+        </div>
+      `;
+    });
+    results.innerHTML = html;
+    
+    // Small skill bonus for searching
+    updatePlayerStats({skill: 1});
+  }
+}
