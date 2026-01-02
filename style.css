@@ -1716,7 +1716,7 @@ body.anim-fast {
   border-radius: 50%;
   background: var(--bg-secondary);
   color: var(--text-primary);
-  border: 2px solid var(--bg-tertiary);
+  border: 2px solid var(--border-color);
   box-shadow: 0 4px 15px rgba(0,0,0,0.15);
   cursor: pointer;
   z-index: 100;
@@ -1877,7 +1877,7 @@ body.anim-fast {
 }
 
 .phone-header {
-  background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
   color: white;
   border-radius: 0;
   padding: 18px 20px;
@@ -1889,13 +1889,13 @@ body.anim-fast {
 }
 
 .phone-body {
-  background: linear-gradient(to bottom, #f8f9fc 0%, #e8ecf1 100%);
+  background: linear-gradient(to bottom, var(--bg-primary) 0%, var(--bg-tertiary) 100%);
   padding: 20px 15px;
   min-height: 440px;
 }
 
 [data-theme="dark"] .phone-body {
-  background: linear-gradient(to bottom, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(to bottom, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
 }
 
 .phone-apps {
@@ -1905,7 +1905,7 @@ body.anim-fast {
 }
 
 .phone-app-btn {
-  background: white;
+  background: var(--bg-secondary);
   border: none;
   border-radius: 18px;
   padding: 25px 15px;
@@ -1915,13 +1915,13 @@ body.anim-fast {
   gap: 8px;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1);
-  color: #2d3436;
+  color: var(--text-primary);
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 [data-theme="dark"] .phone-app-btn {
-  background: #16213e;
-  color: #eee;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
