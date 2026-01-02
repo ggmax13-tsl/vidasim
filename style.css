@@ -374,6 +374,53 @@ body {
   box-shadow: var(--shadow-lg);
 }
 
+/* Radio button groups */
+.radio-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.radio-option {
+  flex: 1;
+  min-width: 120px;
+  padding: 12px 16px;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.radio-option:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-1px);
+}
+
+.radio-option input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.radio-option span {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.radio-option input[type="radio"]:checked + span {
+  color: var(--accent-primary);
+}
+
+[data-theme="dark"] .radio-option {
+  background: var(--bg-tertiary);
+}
+
 /* === GAME SCREEN === */
 #game-screen {
   padding-bottom: 80px; /* Safe area for bottom action bar */

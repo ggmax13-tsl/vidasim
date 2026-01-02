@@ -165,14 +165,27 @@ function checkSavedGame() {
 // === CHARACTER CREATION ===
 function showCharacterCreation() {
   showScreen('character-creation');
-  populateCityDropdown();
+  updateCitiesList();
 }
 
-function populateCityDropdown() {
+function toggleNameInput() {
+  const nameChoice = document.querySelector('input[name="name-choice"]:checked').value;
+  const manualNameGroup = document.getElementById('manual-name-group');
+  
+  if (nameChoice === 'manual') {
+    manualNameGroup.style.display = 'block';
+  } else {
+    manualNameGroup.style.display = 'none';
+  }
+}
+
+function updateCitiesList() {
+  const country = document.getElementById('input-country').value;
   const citySelect = document.getElementById('input-city');
-  if (citySelect) {
+  
+  if (citySelect && DADOS.cidades[country]) {
     citySelect.innerHTML = '';
-    DADOS.cidades.brasil.forEach(city => {
+    DADOS.cidades[country].forEach(city => {
       const option = document.createElement('option');
       option.value = city;
       option.textContent = city;
@@ -181,44 +194,85 @@ function populateCityDropdown() {
   }
 }
 
+function populateCityDropdown() {
+  updateCitiesList();
+}
+
 function startRandomLife() {
   const gender = Math.random() > 0.5 ? 'masculino' : 'feminino';
   const names = DADOS.nomes.brasil[gender === 'masculino' ? 'masculinos' : 'femininos'];
   const name = names[Math.floor(Math.random() * names.length)];
-  const socialClass = ['pobre', 'media', 'alta', 'rica'][Math.floor(Math.random() * 4)];
-  const city = DADOS.cidades.brasil[Math.floor(Math.random() * DADOS.cidades.brasil.length)];
+  const socialClasses = ['miseria', 'muito-baixa', 'baixa', 'media-baixa', 'media', 'media-alta', 'alta', 'ultra-rica'];
+  const socialClass = socialClasses[Math.floor(Math.random() * socialClasses.length)];
+  const city = DADOS.cidades['Brasil'][Math.floor(Math.random() * DADOS.cidades['Brasil'].length)];
+  const structures = ['pais-juntos', 'pais-separados', 'mae-solo', 'pai-solo', 'avos', 'adotado'];
+  const structure = structures[Math.floor(Math.random() * structures.length)];
+  const ethnicities = ['branco', 'negro', 'pardo', 'indigena', 'asiatico'];
+  const ethnicity = ethnicities[Math.floor(Math.random() * ethnicities.length)];
   
   createCharacter({
     name: name,
     gender: gender,
     socialClass: socialClass,
     city: city,
-    country: 'Brasil'
+    country: 'Brasil',
+    familyStructure: structure,
+    ethnicity: ethnicity,
+    birthYear: '2010-2024'
   });
 }
 
 function startCustomLife() {
-  const name = document.getElementById('input-name').value.trim() || 'Jogador';
+  // Check name choice
+  const nameChoice = document.querySelector('input[name="name-choice"]:checked').value;
+  let name;
+  
+  if (nameChoice === 'manual') {
+    name = document.getElementById('input-name').value.trim();
+    if (!name) {
+      showToast('Por favor, digite um nome!', 'warning');
+      return;
+    }
+  } else {
+    // Auto-generate based on gender
+    const gender = document.getElementById('input-gender').value;
+    const names = DADOS.nomes.brasil[gender === 'masculino' ? 'masculinos' : 'femininos'];
+    name = names[Math.floor(Math.random() * names.length)];
+  }
+  
   const gender = document.getElementById('input-gender').value;
   const socialClass = document.getElementById('input-class').value;
   const city = document.getElementById('input-city').value;
   const country = document.getElementById('input-country').value;
+  const familyStructure = document.getElementById('input-family-structure').value;
+  const ethnicity = document.getElementById('input-ethnicity').value;
+  const birthYear = document.getElementById('input-birth-year').value;
   
   createCharacter({
     name: name,
     gender: gender,
     socialClass: socialClass,
     city: city,
-    country: country
+    country: country,
+    familyStructure: familyStructure,
+    ethnicity: ethnicity,
+    birthYear: birthYear
   });
 }
 
 function createCharacter(config) {
   const moneyByClass = {
-    pobre: 100,
-    media: 5000,
-    alta: 50000,
-    rica: 500000
+    'miseria': 0,
+    'muito-baixa': 50,
+    'baixa': 200,
+    'media-baixa': 1000,
+    'media': 5000,
+    'media-alta': 20000,
+    'alta': 50000,
+    'ultra-rica': 500000,
+    // Old values for compatibility
+    'pobre': 100,
+    'rica': 500000
   };
   
   // Generate parents
@@ -238,13 +292,16 @@ function createCharacter(config) {
     city: config.city,
     language: settings.language,
     
-    // Social
+    // Social & Identity
     socialClass: config.socialClass,
+    familyStructure: config.familyStructure || 'pais-juntos',
+    ethnicity: config.ethnicity || 'pardo',
+    birthYear: config.birthYear || '2010-2024',
     
     // Stats (extendable)
     health: 85 + Math.floor(Math.random() * 15),
     mood: 80 + Math.floor(Math.random() * 20),
-    money: moneyByClass[config.socialClass],
+    money: moneyByClass[config.socialClass] || 5000,
     reputation: 50,
     skill: 20 + Math.floor(Math.random() * 30),
     
@@ -257,13 +314,13 @@ function createCharacter(config) {
     parents: {
       mother: {
         name: motherNames[Math.floor(Math.random() * motherNames.length)],
-        alive: true,
+        alive: config.familyStructure !== 'pai-solo',
         affinity: 85 + Math.floor(Math.random() * 15),
         age: 25 + Math.floor(Math.random() * 10)
       },
       father: {
         name: fatherNames[Math.floor(Math.random() * fatherNames.length)],
-        alive: true,
+        alive: config.familyStructure !== 'mae-solo',
         affinity: 80 + Math.floor(Math.random() * 15),
         age: 27 + Math.floor(Math.random() * 10)
       }

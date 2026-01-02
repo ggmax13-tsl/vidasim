@@ -65,45 +65,122 @@
             </div>
             
             <div class="creation-form">
+                <!-- Identity Section -->
                 <div class="form-section">
                     <h3><i class="fas fa-user"></i> Identidade</h3>
                     <div class="form-group">
+                        <label>Quem escolhe o nome?</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="name-choice" value="auto" checked onchange="toggleNameInput()">
+                                <span>Pais escolhem</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="name-choice" value="manual" onchange="toggleNameInput()">
+                                <span>Eu escolho</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="manual-name-group" style="display: none;">
                         <label>Nome</label>
-                        <input type="text" id="input-name" placeholder="Seu nome...">
+                        <input type="text" id="input-name" placeholder="Digite seu nome...">
                     </div>
                     <div class="form-group">
                         <label>Gênero</label>
                         <select id="input-gender">
                             <option value="masculino">Masculino</option>
                             <option value="feminino">Feminino</option>
+                            <option value="nao-binario">Não-binário</option>
                         </select>
                     </div>
                 </div>
                 
+                <!-- Family Section -->
                 <div class="form-section">
                     <h3><i class="fas fa-home"></i> Família</h3>
                     <div class="form-group">
                         <label>Classe Social</label>
                         <select id="input-class">
-                            <option value="pobre">Classe Baixa</option>
-                            <option value="media" selected>Classe Média</option>
-                            <option value="alta">Classe Alta</option>
-                            <option value="rica">Rica</option>
+                            <option value="miseria">Miséria Extrema</option>
+                            <option value="muito-baixa">Muito Baixa</option>
+                            <option value="baixa">Baixa</option>
+                            <option value="media-baixa">Média-Baixa</option>
+                            <option value="media" selected>Média</option>
+                            <option value="media-alta">Média-Alta</option>
+                            <option value="alta">Alta</option>
+                            <option value="ultra-rica">Ultra-Rica</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Estrutura Familiar</label>
+                        <select id="input-family-structure">
+                            <option value="pais-juntos" selected>Pais Juntos</option>
+                            <option value="pais-separados">Pais Separados</option>
+                            <option value="mae-solo">Mãe Solo</option>
+                            <option value="pai-solo">Pai Solo</option>
+                            <option value="avos">Criado pelos Avós</option>
+                            <option value="adotado">Adotado</option>
+                            <option value="orfanato">Orfanato</option>
+                            <option value="familia-ampliada">Família Ampliada</option>
+                            <option value="outros">Outros Responsáveis</option>
                         </select>
                     </div>
                 </div>
                 
+                <!-- Location Section -->
                 <div class="form-section">
                     <h3><i class="fas fa-globe"></i> Localização</h3>
                     <div class="form-group">
                         <label>País</label>
-                        <select id="input-country">
+                        <select id="input-country" onchange="updateCitiesList()">
                             <option value="Brasil" selected>Brasil</option>
+                            <option value="Estados Unidos">Estados Unidos</option>
+                            <option value="Portugal">Portugal</option>
+                            <option value="Espanha">Espanha</option>
+                            <option value="França">França</option>
+                            <option value="Itália">Itália</option>
+                            <option value="Alemanha">Alemanha</option>
+                            <option value="Inglaterra">Inglaterra</option>
+                            <option value="Japão">Japão</option>
+                            <option value="China">China</option>
+                            <option value="Canadá">Canadá</option>
+                            <option value="Austrália">Austrália</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Cidade</label>
                         <select id="input-city"></select>
+                    </div>
+                </div>
+                
+                <!-- Appearance Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-user-circle"></i> Aparência</h3>
+                    <div class="form-group">
+                        <label>Etnia/Raça</label>
+                        <select id="input-ethnicity">
+                            <option value="branco">Branco</option>
+                            <option value="negro">Negro</option>
+                            <option value="pardo">Pardo</option>
+                            <option value="indigena">Indígena</option>
+                            <option value="asiatico">Asiático</option>
+                            <option value="outro">Outro</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Birth Year Section -->
+                <div class="form-section">
+                    <h3><i class="fas fa-calendar"></i> Nascimento</h3>
+                    <div class="form-group">
+                        <label>Ano de Nascimento</label>
+                        <select id="input-birth-year">
+                            <option value="2010-2024">2010-2024 (Geração Alpha)</option>
+                            <option value="1995-2009">1995-2009 (Geração Z)</option>
+                            <option value="1980-1994">1980-1994 (Millennials)</option>
+                            <option value="1965-1979">1965-1979 (Geração X)</option>
+                            <option value="1950-1964">1950-1964 (Baby Boomers)</option>
+                        </select>
                     </div>
                 </div>
                 

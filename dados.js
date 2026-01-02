@@ -30,7 +30,18 @@ const DADOS = {
   paises: ['Brasil', 'Estados Unidos', 'Portugal', 'Espanha', 'França', 'Itália', 'Alemanha', 'Inglaterra', 'Japão', 'China', 'Canadá', 'Austrália'],
   
   cidades: {
-    brasil: ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador', 'Fortaleza', 'Belo Horizonte', 'Manaus', 'Curitiba', 'Recife', 'Porto Alegre', 'Belém', 'Goiânia', 'Guarulhos', 'Campinas', 'São Luís', 'São Gonçalo', 'Maceió', 'Duque de Caxias', 'Natal', 'Campo Grande']
+    'Brasil': ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador', 'Fortaleza', 'Belo Horizonte', 'Manaus', 'Curitiba', 'Recife', 'Porto Alegre', 'Belém', 'Goiânia', 'Guarulhos', 'Campinas', 'São Luís', 'São Gonçalo', 'Maceió', 'Duque de Caxias', 'Natal', 'Campo Grande', 'João Pessoa', 'Teresina', 'São Bernardo do Campo', 'Nova Iguaçu', 'Osasco'],
+    'Estados Unidos': ['Nova York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Filadélfia', 'San Antonio', 'San Diego', 'Dallas', 'San José', 'Austin', 'Jacksonville', 'San Francisco', 'Charlotte', 'Seattle', 'Denver', 'Boston', 'Miami', 'Atlanta', 'Las Vegas'],
+    'Portugal': ['Lisboa', 'Porto', 'Braga', 'Coimbra', 'Funchal', 'Setúbal', 'Almada', 'Aveiro', 'Évora', 'Faro', 'Guimarães', 'Leiria', 'Viseu', 'Vila Nova de Gaia', 'Amadora'],
+    'Espanha': ['Madrid', 'Barcelona', 'Valência', 'Sevilha', 'Saragoça', 'Málaga', 'Múrcia', 'Palma', 'Las Palmas', 'Bilbau', 'Alicante', 'Córdoba', 'Granada', 'Valladolid', 'Vigo'],
+    'França': ['Paris', 'Marselha', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Estrasburgo', 'Montpellier', 'Bordeaux', 'Lille', 'Rennes', 'Reims', 'Le Havre', 'Toulon', 'Grenoble'],
+    'Itália': ['Roma', 'Milão', 'Nápoles', 'Turim', 'Palermo', 'Gênova', 'Bolonha', 'Florença', 'Bari', 'Catânia', 'Veneza', 'Verona', 'Messina', 'Pádua', 'Trieste'],
+    'Alemanha': ['Berlim', 'Hamburgo', 'Munique', 'Colônia', 'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Dortmund', 'Essen', 'Leipzig', 'Bremen', 'Dresden', 'Hanôver', 'Nuremberg', 'Duisburgo'],
+    'Inglaterra': ['Londres', 'Birmingham', 'Manchester', 'Leeds', 'Liverpool', 'Sheffield', 'Bristol', 'Newcastle', 'Nottingham', 'Leicester', 'Coventry', 'Bradford', 'Cardiff', 'Belfast', 'Glasgow'],
+    'Japão': ['Tóquio', 'Yokohama', 'Osaka', 'Nagoya', 'Sapporo', 'Fukuoka', 'Kobe', 'Kyoto', 'Kawasaki', 'Saitama', 'Hiroshima', 'Sendai', 'Chiba', 'Kitakyushu', 'Sakai'],
+    'China': ['Xangai', 'Pequim', 'Guangzhou', 'Shenzhen', 'Chengdu', 'Tianjin', 'Wuhan', 'Dongguan', 'Chongqing', 'Nanjing', 'Shenyang', 'Hangzhou', 'Xi\'an', 'Harbin', 'Qingdao'],
+    'Canadá': ['Toronto', 'Montreal', 'Vancouver', 'Calgary', 'Edmonton', 'Ottawa', 'Winnipeg', 'Quebec', 'Hamilton', 'Kitchener', 'London', 'Victoria', 'Halifax', 'Oshawa', 'Windsor'],
+    'Austrália': ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Gold Coast', 'Newcastle', 'Canberra', 'Wollongong', 'Logan City', 'Geelong', 'Hobart', 'Townsville', 'Cairns', 'Darwin']
   },
 
   linguas: ['Português', 'Inglês', 'Espanhol', 'Francês', 'Alemão', 'Italiano', 'Japonês', 'Mandarim'],
